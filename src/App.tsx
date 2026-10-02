@@ -103,22 +103,22 @@ export function App() {
   }
 
   return (
-    <div className="min-h-screen bg-[#070A12] text-slate-100 pb-24 md:pb-16 font-sans">
+    <div className="min-h-screen w-full bg-[#070A12] text-slate-100 pb-24 md:pb-16 font-sans">
       {/* Sleek Top Navigation */}
-      <header className="sticky top-0 z-40 bg-[#070A12]/80 backdrop-blur-2xl border-b border-slate-800/80">
-        <div className="max-w-4xl mx-auto px-4 sm:px-6 h-16 flex items-center justify-between gap-4">
+      <header className="sticky top-0 z-40 w-full bg-[#070A12]/85 backdrop-blur-2xl border-b border-slate-800/80">
+        <div className="w-full px-4 sm:px-6 md:px-8 xl:px-12 h-16 flex items-center justify-between gap-4">
           {/* Logo */}
-          <div className="flex items-center gap-2.5">
-            <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-emerald-600 to-teal-400 flex items-center justify-center text-black font-mono font-black text-base shadow-sm">
+          <div className="flex items-center gap-3">
+            <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-black font-mono font-black text-base shadow-sm">
               ৳
             </div>
             <div>
-              <div className="flex items-center gap-1.5">
+              <div className="flex items-center gap-2">
                 <span className="text-base font-bold text-white tracking-tight">
                   Hisab<span className="text-emerald-400">Split</span>
                 </span>
-                <span className="text-[10px] font-mono px-1.5 py-0.2 rounded bg-slate-800 text-slate-400">
-                  হিসাব
+                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700/60 hidden sm:inline-block">
+                  হিসাব-স্প্লিট
                 </span>
               </div>
             </div>
@@ -189,8 +189,8 @@ export function App() {
         </div>
       </header>
 
-      {/* Main App Container */}
-      <main className="max-w-4xl mx-auto px-4 sm:px-6 pt-6">
+      {/* Main App Container (100% Width Full Screen) */}
+      <main className="w-full px-4 sm:px-6 md:px-8 xl:px-12 pt-6">
         {activeTab === 'turf' && (
           <TurfModule initialState={turfState} onOpenMFS={handleOpenMFS} />
         )}

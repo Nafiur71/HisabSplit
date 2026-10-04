@@ -35,6 +35,7 @@ import {
   LogIn,
   Upload,
   ChevronDown,
+  X,
 } from 'lucide-react';
 import type {
   MessState,
@@ -188,6 +189,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
 
   // Date selection for Daily Meal Tracker
   const todayStr = new Date().toISOString().split('T')[0];
+  const tomorrowStr = new Date(Date.now() + 86400000).toISOString().split('T')[0];
   const [selectedDate, setSelectedDate] = useState<string>(todayStr);
 
   // Modals
@@ -618,6 +620,35 @@ export const MessModule: React.FC<MessModuleProps> = ({
         handleDailyMealUpdate(m.memberId, 0, 1, 1, false, 'Auto meal');
       }
     });
+    triggerToast(`Auto-filled meals for ${selectedDate}`);
+  };
+
+  // Handler: Turn All Meals ON for selected date
+  const handleTurnAllMealsOn = () => {
+    memberMeals.forEach((m) => {
+      const existing = dailyMeals.find(
+        (r) => r.date === selectedDate && r.memberId === m.memberId
+      );
+      const b = existing ? existing.breakfast : 0;
+      const l = existing && existing.lunch > 0 ? existing.lunch : 1;
+      const d = existing && existing.dinner > 0 ? existing.dinner : 1;
+      handleDailyMealUpdate(m.memberId, b, l, d, false, 'All Meals ON');
+    });
+    triggerToast(`Turned ALL meals ON for ${selectedDate}`);
+  };
+
+  // Handler: Turn All Meals OFF for selected date
+  const handleTurnAllMealsOff = () => {
+    memberMeals.forEach((m) => {
+      const existing = dailyMeals.find(
+        (r) => r.date === selectedDate && r.memberId === m.memberId
+      );
+      const b = existing ? existing.breakfast : 0;
+      const l = existing ? existing.lunch : 1;
+      const d = existing ? existing.dinner : 1;
+      handleDailyMealUpdate(m.memberId, b, l, d, true, 'All Meals OFF');
+    });
+    triggerToast(`Turned ALL meals OFF for ${selectedDate}`);
   };
 
   // Handler: Add Bazar Expense
@@ -1514,21 +1545,55 @@ export const MessModule: React.FC<MessModuleProps> = ({
                 </button>
                 <button
                   onClick={() => setSelectedDate(todayStr)}
-                  className="text-xs px-3 py-2 rounded-2xl bg-slate-800 text-slate-300 hover:text-white font-medium"
+                  className={`text-xs px-3 py-2 rounded-2xl font-bold transition-all ${
+                    selectedDate === todayStr
+                      ? 'bg-sky-500 text-black shadow-md shadow-sky-500/25'
+                      : 'bg-slate-800 text-slate-300 hover:text-white'
+                  }`}
                 >
                   Today
                 </button>
+                <button
+                  onClick={() => setSelectedDate(tomorrowStr)}
+                  className={`text-xs px-3 py-2 rounded-2xl font-bold transition-all ${
+                    selectedDate === tomorrowStr
+                      ? 'bg-amber-500 text-black shadow-md shadow-amber-500/25'
+                      : 'bg-slate-800 text-slate-300 hover:text-white'
+                  }`}
+                  title="Plan meals for tomorrow"
+                >
+                  Tomorrow
+                </button>
               </div>
 
-              {/* Auto Meal Action for the day */}
+              {/* Bulk Meal Actions for Manager */}
               {userRole === 'manager' && (
-                <button
-                  onClick={handleAutoFillDailyMeals}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 text-xs font-semibold transition-all self-start sm:self-auto"
-                >
-                  <Zap className="w-3.5 h-3.5" />
-                  Auto-Fill Today's Meals
-                </button>
+                <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
+                  <button
+                    onClick={handleTurnAllMealsOn}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 text-xs font-bold transition-all shadow-sm"
+                    title="Turn all members' meals ON for this day"
+                  >
+                    <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
+                    All Meals ON
+                  </button>
+                  <button
+                    onClick={handleTurnAllMealsOff}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/30 text-xs font-bold transition-all shadow-sm"
+                    title="Turn all members' meals OFF for this day"
+                  >
+                    <X className="w-3.5 h-3.5 text-rose-400" />
+                    All Meals OFF
+                  </button>
+                  <button
+                    onClick={handleAutoFillDailyMeals}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 text-xs font-semibold transition-all"
+                    title="Auto-fill default lunch & dinner for today"
+                  >
+                    <Zap className="w-3.5 h-3.5" />
+                    Auto-Fill
+                  </button>
+                </div>
               )}
             </div>
 
@@ -1605,18 +1670,81 @@ export const MessModule: React.FC<MessModuleProps> = ({
                         {member.roomNo || 'Room 301'}
                       </div>
                     </div>
-                    {/* Advance Meal Off Toggle */}
+                    {/* Header Meal Status Indicator */}
                     <button
-                      disabled={!canEdit}
-                      onClick={() => handleToggleMealOff(member.memberId)}
-                      className={`text-xs px-2.5 py-1 rounded-xl font-semibold border transition-all ${
+                      onClick={() => {
+                        if (!canEdit) {
+                          triggerToast(`Switch 'Viewing as: ${member.name}' or switch to Manager Mode to change.`);
+                          return;
+                        }
+                        handleToggleMealOff(member.memberId);
+                      }}
+                      className={`text-xs px-2.5 py-1 rounded-xl font-bold border transition-all flex items-center gap-1.5 cursor-pointer shadow-sm ${
                         isOff
-                          ? 'bg-rose-500/20 text-rose-300 border-rose-500/40'
-                          : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40'
-                      } ${!canEdit ? 'opacity-50 cursor-not-allowed' : ''}`}
+                          ? 'bg-rose-500/20 text-rose-300 border-rose-500/40 hover:bg-rose-500/30'
+                          : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30'
+                      }`}
+                      title="Click to toggle Meal ON or OFF"
                     >
-                      {isOff ? '🚫 Meal Off' : '✅ Meal Active'}
+                      <span className={`w-2 h-2 rounded-full ${isOff ? 'bg-rose-400 animate-pulse' : 'bg-emerald-400'}`} />
+                      <span>{isOff ? 'Meal OFF' : 'Meal ON'}</span>
                     </button>
+                  </div>
+
+                  {/* Prominent Meal ON / OFF Toggle Switch */}
+                  <div className="my-3 p-3 rounded-2xl bg-[#070A12] border border-slate-800/80 flex items-center justify-between gap-2 shadow-inner">
+                    <div className="flex items-center gap-2">
+                      <div className={`w-3 h-3 rounded-full flex items-center justify-center ${
+                        isOff ? 'bg-rose-500 shadow-md shadow-rose-500/50' : 'bg-emerald-400 shadow-md shadow-emerald-400/50'
+                      }`}>
+                        <span className="w-1.5 h-1.5 rounded-full bg-black/60" />
+                      </div>
+                      <span className="text-xs font-semibold text-slate-300">
+                        Meal: <strong className={isOff ? 'text-rose-400 uppercase tracking-wide' : 'text-emerald-400 uppercase tracking-wide'}>{isOff ? 'OFF' : 'ON'}</strong>
+                      </span>
+                    </div>
+
+                    <div className="flex items-center bg-slate-900 border border-slate-700/60 rounded-xl p-1 gap-1">
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (!canEdit) {
+                            triggerToast(`Switch 'Viewing as: ${member.name}' or switch to Manager Mode to change.`);
+                            return;
+                          }
+                          if (isOff) handleToggleMealOff(member.memberId);
+                        }}
+                        className={`px-3 py-1 rounded-lg text-xs font-extrabold transition-all flex items-center gap-1 ${
+                          !isOff
+                            ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/40 scale-105'
+                            : 'text-slate-400 hover:text-slate-200'
+                        }`}
+                        title="Turn Meal ON for this day"
+                      >
+                        <CheckCircle2 className="w-3 h-3" />
+                        <span>ON</span>
+                      </button>
+
+                      <button
+                        type="button"
+                        onClick={() => {
+                          if (!canEdit) {
+                            triggerToast(`Switch 'Viewing as: ${member.name}' or switch to Manager Mode to change.`);
+                            return;
+                          }
+                          if (!isOff) handleToggleMealOff(member.memberId);
+                        }}
+                        className={`px-3 py-1 rounded-lg text-xs font-extrabold transition-all flex items-center gap-1 ${
+                          isOff
+                            ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/40 scale-105'
+                            : 'text-slate-400 hover:text-slate-200'
+                        }`}
+                        title="Turn Meal OFF for this day"
+                      >
+                        <X className="w-3 h-3" />
+                        <span>OFF</span>
+                      </button>
+                    </div>
                   </div>
 
                   {/* Meals Counters */}

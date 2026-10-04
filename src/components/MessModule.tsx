@@ -84,14 +84,14 @@ interface MessModuleProps {
   }) => void;
 }
 
-type MessSubTab = 'overview' | 'meals' | 'bazar' | 'deposits' | 'wishlist' | 'alerts';
+type MessSubTab = 'meals' | 'bazar' | 'overview';
 
 export const MessModule: React.FC<MessModuleProps> = ({
   initialState,
   onOpenMFS,
 }) => {
   // Navigation & Role states
-  const [activeTab, setActiveTab] = useState<MessSubTab>('overview');
+  const [activeTab, setActiveTab] = useState<MessSubTab>('meals');
   const [userRole, setUserRole] = useState<MessRole>('manager');
   const [activeViewerId, setActiveViewerId] = useState<string>(
     initialState.memberMeals?.[0]?.memberId || 'u1'
@@ -741,273 +741,246 @@ export const MessModule: React.FC<MessModuleProps> = ({
         </div>
       )}
 
-      {/* 1. Header Bar: Mess Switcher, Title, Role Switcher, Quick Actions */}
-      <div className="bg-[#0E131F] rounded-3xl p-5 sm:p-6 border border-slate-800/80 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
-        <div className="space-y-2">
-          {/* Active Mess Switcher Pill & Quick Action Bar */}
-          <div className="flex flex-wrap items-center gap-2">
+      {/* 1. Header Bar: Mess Brand, Code, Quick Invite, Role & Tools */}
+      <div className="bg-[#0E131F] rounded-3xl p-4 sm:p-6 border border-slate-800/80 shadow-xl space-y-4">
+        {/* Top Row: Mess Identity, Code Badge & Quick Switch */}
+        <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800/60">
+          <div className="flex flex-wrap items-center gap-3">
+            <div className="flex items-center gap-2.5">
+              <div className="w-10 h-10 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-sm">
+                <Building className="w-5 h-5" />
+              </div>
+              <div>
+                <div className="flex items-center gap-2">
+                  <input
+                    type="text"
+                    value={messName}
+                    onChange={(e) => setMessName(e.target.value)}
+                    className="text-lg sm:text-2xl font-black text-white bg-transparent border-b border-transparent hover:border-slate-700 focus:border-emerald-500 focus:outline-none transition-colors"
+                    title="Click to rename mess"
+                  />
+                </div>
+                <div className="flex items-center gap-2 text-xs text-slate-400">
+                  <span className="font-mono text-slate-400">Month:</span>
+                  <input
+                    type="text"
+                    value={month}
+                    onChange={(e) => setMonth(e.target.value)}
+                    className="bg-transparent text-slate-300 hover:text-white border-b border-transparent hover:border-slate-600 focus:border-emerald-500 focus:outline-none w-28 font-mono text-xs uppercase"
+                    title="Click to edit month"
+                  />
+                </div>
+              </div>
+            </div>
+
+            {/* Invite Code Pill with 1-Click Copy */}
+            <button
+              onClick={() => {
+                navigator.clipboard.writeText(inviteCode);
+                triggerToast(`Copied Mess Code: ${inviteCode}`);
+              }}
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-[#070A12] hover:bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-mono font-bold transition-all shadow-sm"
+              title="Click to copy Mess Invite Code"
+            >
+              <span>🔑</span>
+              <span>{inviteCode}</span>
+              <Copy className="w-3 h-3 text-emerald-400" />
+            </button>
+
+            {/* Mess Switcher Button */}
             <button
               onClick={() => setShowMessSwitcherModal(true)}
-              className="group flex items-center gap-2 px-3 py-1.5 rounded-2xl bg-[#070A12] hover:bg-slate-800/80 border border-slate-700/80 text-white transition-all shadow-sm"
-              title="Click to switch or manage messes"
+              className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-[#070A12] hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/80 text-xs font-semibold transition-all"
+              title="Switch or manage multiple messes"
             >
-              <Building className="w-4 h-4 text-emerald-400 group-hover:scale-110 transition-transform" />
-              <span className="text-sm font-bold tracking-tight text-white group-hover:text-emerald-300">
-                {messName}
-              </span>
-              <span className="text-[10px] font-mono px-1.5 py-0.5 rounded-md bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
-                {inviteCode}
-              </span>
-              <ChevronDown className="w-3.5 h-3.5 text-slate-400 group-hover:text-white transition-transform" />
-            </button>
-
-            <span className="text-[11px] font-mono text-slate-400 flex items-center gap-1">
-              •
-              <input
-                type="text"
-                value={month}
-                onChange={(e) => setMonth(e.target.value)}
-                className="bg-transparent text-slate-300 hover:text-white border-b border-transparent hover:border-slate-600 focus:border-emerald-500 focus:outline-none w-24 uppercase font-mono text-[11px]"
-                title="Click to edit month"
-              />
-            </span>
-
-            {/* Quick Action Buttons for Multi-Mess */}
-            <button
-              onClick={() => setShowCreateMessModal(true)}
-              className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-800/80 hover:bg-emerald-500/20 text-slate-300 hover:text-emerald-300 border border-slate-700/60 text-[11px] font-semibold transition-all"
-              title="Create a new isolated mess"
-            >
-              <Plus className="w-3 h-3 text-emerald-400" />
-              New Mess
-            </button>
-
-            <button
-              onClick={() => setShowJoinMessModal(true)}
-              className="flex items-center gap-1 px-2.5 py-1 rounded-xl bg-slate-800/80 hover:bg-sky-500/20 text-slate-300 hover:text-sky-300 border border-slate-700/60 text-[11px] font-semibold transition-all"
-              title="Join an existing mess via invite code"
-            >
-              <LogIn className="w-3 h-3 text-sky-400" />
-              Join via Code
+              <Building className="w-3.5 h-3.5 text-sky-400" />
+              <span>Switch Mess</span>
+              <ChevronDown className="w-3 h-3 text-slate-400" />
             </button>
           </div>
 
-          <div className="flex items-center gap-3">
-            <input
-              type="text"
-              value={messName}
-              onChange={(e) => setMessName(e.target.value)}
-              className="text-xl sm:text-2xl font-black text-white bg-transparent border-b border-transparent hover:border-slate-700 focus:border-emerald-500 focus:outline-none transition-colors"
-              title="Click to rename mess"
-            />
+          {/* Top Right Action: Prominent Invite Roommates Button */}
+          <div className="flex items-center gap-2">
+            <button
+              onClick={() => setShowInviteModal(true)}
+              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-black font-bold text-xs sm:text-sm shadow-lg shadow-emerald-500/25 transition-all transform hover:scale-[1.02]"
+              title="Share mess invite code or direct link with roommates"
+            >
+              <Share2 className="w-4 h-4" />
+              <span>+ Invite Roommates</span>
+            </button>
           </div>
         </div>
 
-
-        {/* Role & Viewer Selector + Quick Tools */}
-        <div className="flex flex-wrap items-center gap-2.5">
-          {/* Role Mode Toggle with PIN Protection */}
-          <div className="flex items-center bg-[#070A12] border border-slate-800 rounded-2xl p-1">
-            <button
-              onClick={() => {
-                if (userRole === 'manager') return;
-                if (isManagerUnlocked) {
-                  setUserRole('manager');
-                } else {
-                  setEnteredPin('');
-                  setPinError(null);
-                  setShowPinModal(true);
-                }
-              }}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                userRole === 'manager'
-                  ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              {isManagerUnlocked ? (
-                <Shield className="w-3.5 h-3.5" />
-              ) : (
-                <Lock className="w-3.5 h-3.5 text-amber-400" />
-              )}
-              Manager Mode
-            </button>
-            <button
-              onClick={() => setUserRole('member')}
-              className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold transition-all ${
-                userRole === 'member'
-                  ? 'bg-sky-500/20 text-sky-400 border border-sky-500/40 shadow-sm'
-                  : 'text-slate-400 hover:text-slate-200'
-              }`}
-            >
-              <UserCheck className="w-3.5 h-3.5" />
-              Member View
-            </button>
-          </div>
-
-          {/* Quick Lock & Change PIN for Manager */}
-          {userRole === 'manager' && (
-            <div className="flex items-center gap-1">
+        {/* Bottom Row: Role Mode Switcher, Active Viewer & Fast Utilities */}
+        <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
+          {/* Role Toggle + Manager Controls */}
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center bg-[#070A12] border border-slate-800 rounded-2xl p-1">
               <button
                 onClick={() => {
-                  setNewPinInput('');
-                  setConfirmNewPinInput('');
-                  setChangePinError(null);
-                  setChangePinSuccess(false);
-                  setShowChangePinModal(true);
+                  if (userRole === 'manager') return;
+                  if (isManagerUnlocked) {
+                    setUserRole('manager');
+                  } else {
+                    setEnteredPin('');
+                    setPinError(null);
+                    setShowPinModal(true);
+                  }
                 }}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-xs font-medium text-slate-300 border border-slate-700/60 transition-all"
-                title="Change 4-digit Manager PIN"
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-semibold transition-all ${
+                  userRole === 'manager'
+                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
               >
-                <Key className="w-3.5 h-3.5 text-amber-400" />
-                PIN
+                {isManagerUnlocked ? (
+                  <Shield className="w-3.5 h-3.5 text-emerald-400" />
+                ) : (
+                  <Lock className="w-3.5 h-3.5 text-amber-400" />
+                )}
+                Manager Mode
               </button>
               <button
-                onClick={() => {
-                  setIsManagerUnlocked(false);
-                  setUserRole('member');
-                }}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-2xl bg-slate-800/80 hover:bg-slate-700/80 text-xs font-medium text-rose-300 border border-slate-700/60 transition-all"
-                title="Lock Manager Mode (PIN required to unlock)"
+                onClick={() => setUserRole('member')}
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-semibold transition-all ${
+                  userRole === 'member'
+                    ? 'bg-sky-500/20 text-sky-400 border border-sky-500/40 shadow-sm'
+                    : 'text-slate-400 hover:text-slate-200'
+                }`}
               >
-                <Lock className="w-3.5 h-3.5 text-rose-400" />
-                Lock
+                <UserCheck className="w-3.5 h-3.5 text-sky-400" />
+                Member View
               </button>
             </div>
-          )}
 
-          {/* Active Viewer Selector */}
-          <div className="flex items-center gap-1.5 bg-[#070A12] border border-slate-800 rounded-2xl px-3 py-1.5 text-xs text-slate-300">
-            <span className="text-slate-500 text-[10px] uppercase font-mono">Viewing as:</span>
-            <select
-              value={activeViewerId}
-              onChange={(e) => setActiveViewerId(e.target.value)}
-              className="bg-transparent text-white font-medium focus:outline-none cursor-pointer"
-            >
-              {memberMeals.map((m) => (
-                <option key={m.memberId} value={m.memberId} className="bg-slate-900 text-white">
-                  {m.name} {m.role === 'manager' ? '(Manager)' : ''}
-                </option>
-              ))}
-            </select>
+            {userRole === 'manager' && (
+              <div className="flex items-center gap-1">
+                <button
+                  onClick={() => {
+                    setNewPinInput('');
+                    setConfirmNewPinInput('');
+                    setChangePinError(null);
+                    setChangePinSuccess(false);
+                    setShowChangePinModal(true);
+                  }}
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 border border-slate-700/60 font-medium transition-all"
+                  title="Change 4-digit Manager PIN"
+                >
+                  <Key className="w-3.5 h-3.5 text-amber-400" />
+                  PIN
+                </button>
+                <button
+                  onClick={() => {
+                    setIsManagerUnlocked(false);
+                    setUserRole('member');
+                  }}
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-rose-300 border border-slate-700/60 font-medium transition-all"
+                  title="Lock Manager Mode"
+                >
+                  <Lock className="w-3.5 h-3.5 text-rose-400" />
+                  Lock
+                </button>
+              </div>
+            )}
           </div>
 
-          {/* Invite Code Button */}
-          <button
-            onClick={() => setShowInviteModal(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-slate-800/80 hover:bg-slate-700/80 text-xs font-medium text-slate-200 border border-slate-700/60 transition-all"
-            title="Mess Invite Code & Link"
-          >
-            <Share2 className="w-3.5 h-3.5 text-sky-400" />
-            Invite
-          </button>
+          {/* Active Viewer Selector & Quick Reports */}
+          <div className="flex flex-wrap items-center gap-2">
+            <div className="flex items-center gap-1.5 bg-[#070A12] border border-slate-800 rounded-2xl px-3 py-1.5 text-slate-300">
+              <span className="text-slate-500 text-[10px] uppercase font-mono">Viewing as:</span>
+              <select
+                value={activeViewerId}
+                onChange={(e) => setActiveViewerId(e.target.value)}
+                className="bg-transparent text-white font-medium focus:outline-none cursor-pointer"
+              >
+                {memberMeals.map((m) => (
+                  <option key={m.memberId} value={m.memberId} className="bg-slate-900 text-white">
+                    {m.name} {m.role === 'manager' ? '(Manager)' : ''}
+                  </option>
+                ))}
+              </select>
+            </div>
 
-          {/* CSV Export Button */}
-          <button
-            onClick={() => downloadMessCsv(calculations, messName, month)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-slate-800/80 hover:bg-slate-700/80 text-xs font-medium text-slate-200 border border-slate-700/60 transition-all"
-            title="Export Excel / CSV Report"
-          >
-            <Download className="w-3.5 h-3.5 text-emerald-400" />
-            CSV Report
-          </button>
-
-          {/* Print Summary Button */}
-          <button
-            onClick={() => setShowPrintModal(true)}
-            className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-slate-800/80 hover:bg-slate-700/80 text-xs font-medium text-slate-200 border border-slate-700/60 transition-all"
-            title="Print Monthly Summary Slip"
-          >
-            <Printer className="w-3.5 h-3.5 text-amber-400" />
-            Print
-          </button>
-
-          {/* Reset / Start Fresh Button */}
-          {userRole === 'manager' && (
             <button
-              onClick={handleClearAllDemoData}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-rose-500/10 hover:bg-rose-500/20 text-xs font-medium text-rose-300 border border-rose-500/30 transition-all"
-              title="Clear all demo data and start with an empty mess"
+              onClick={() => downloadMessCsv(calculations, messName, month)}
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 border border-slate-700/60 transition-all"
+              title="Download Excel / CSV Summary"
             >
-              <RotateCcw className="w-3.5 h-3.5" />
-              Reset / Clear
+              <Download className="w-3.5 h-3.5 text-emerald-400" />
+              <span>CSV</span>
             </button>
-          )}
+
+            <button
+              onClick={() => setShowPrintModal(true)}
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 border border-slate-700/60 transition-all"
+              title="Print Monthly Summary Slip"
+            >
+              <Printer className="w-3.5 h-3.5 text-amber-400" />
+              <span>Print</span>
+            </button>
+
+            {userRole === 'manager' && (
+              <button
+                onClick={handleClearAllDemoData}
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 transition-all"
+                title="Clear all demo data and start with an empty mess"
+              >
+                <RotateCcw className="w-3.5 h-3.5 text-rose-400" />
+                <span>Reset</span>
+              </button>
+            )}
+          </div>
         </div>
       </div>
 
-      {/* 2. Sub-Tabs Navigation */}
-      <div className="flex items-center gap-2 overflow-x-auto pb-2 scrollbar-none border-b border-slate-800/80">
-        <button
-          onClick={() => setActiveTab('overview')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${
-            activeTab === 'overview'
-              ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/20'
-              : 'bg-[#0E131F] text-slate-400 hover:text-white border border-slate-800/60'
-          }`}
-        >
-          <Utensils className="w-4 h-4" />
-          1. Overview & Balances
-        </button>
-
+      {/* 2. Sub-Tabs Navigation (3 Core Pillars) */}
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 p-1.5 bg-[#0E131F] border border-slate-800/80 rounded-3xl shadow-lg">
         <button
           onClick={() => setActiveTab('meals')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${
+          className={`flex items-center justify-center gap-2.5 px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold transition-all ${
             activeTab === 'meals'
-              ? 'bg-sky-500 text-black shadow-lg shadow-sky-500/20'
-              : 'bg-[#0E131F] text-slate-400 hover:text-white border border-slate-800/60'
+              ? 'bg-sky-500 text-black shadow-lg shadow-sky-500/25'
+              : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
           }`}
         >
           <Calendar className="w-4 h-4" />
-          2. Meal Tracking & Booking
+          <span>1. Daily Meals (মিল হিসাব)</span>
         </button>
 
         <button
           onClick={() => setActiveTab('bazar')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${
+          className={`flex items-center justify-center gap-2.5 px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold transition-all relative ${
             activeTab === 'bazar'
-              ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/20'
-              : 'bg-[#0E131F] text-slate-400 hover:text-white border border-slate-800/60'
+              ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/25'
+              : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
           }`}
         >
           <ShoppingBag className="w-4 h-4" />
-          3. Bazar & Expenses
+          <span>2. Bazar & Shopping (বাজার ও ফর্দ)</span>
+          {shoppingList.filter((s) => !s.isBought).length > 0 && (
+            <span
+              className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-black ${
+                activeTab === 'bazar'
+                  ? 'bg-black text-amber-400'
+                  : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
+              }`}
+            >
+              {shoppingList.filter((s) => !s.isBought).length}
+            </span>
+          )}
         </button>
 
         <button
-          onClick={() => setActiveTab('deposits')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${
-            activeTab === 'deposits'
-              ? 'bg-purple-500 text-white shadow-lg shadow-purple-500/20'
-              : 'bg-[#0E131F] text-slate-400 hover:text-white border border-slate-800/60'
+          onClick={() => setActiveTab('overview')}
+          className={`flex items-center justify-center gap-2.5 px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold transition-all ${
+            activeTab === 'overview'
+              ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/25'
+              : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
           }`}
         >
-          <Wallet className="w-4 h-4" />
-          4. Fund & Deposits
-        </button>
-
-        <button
-          onClick={() => setActiveTab('wishlist')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${
-            activeTab === 'wishlist'
-              ? 'bg-teal-500 text-black shadow-lg shadow-teal-500/20'
-              : 'bg-[#0E131F] text-slate-400 hover:text-white border border-slate-800/60'
-          }`}
-        >
-          <ListChecks className="w-4 h-4" />
-          5. Shopping List ({shoppingList.filter((s) => !s.isBought).length})
-        </button>
-
-        <button
-          onClick={() => setActiveTab('alerts')}
-          className={`flex items-center gap-2 px-4 py-2.5 rounded-2xl text-xs sm:text-sm font-semibold transition-all whitespace-nowrap ${
-            activeTab === 'alerts'
-              ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/20'
-              : 'bg-[#0E131F] text-slate-400 hover:text-white border border-slate-800/60'
-          }`}
-        >
-          <Bell className="w-4 h-4" />
-          6. Alerts & Notifications
+          <Utensils className="w-4 h-4" />
+          <span>3. Accounts & Balances (মাসিক হিসাব ও ফান্ড)</span>
         </button>
       </div>
 
@@ -1433,6 +1406,81 @@ export const MessModule: React.FC<MessModuleProps> = ({
               </div>
             </div>
           </div>
+
+          {/* Mess Fund & Member Deposits Log */}
+          <div className="bg-[#0E131F] rounded-3xl p-6 border border-slate-800/80 shadow-xl space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800/60">
+              <div>
+                <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
+                  <Wallet className="w-5 h-5 text-purple-400" />
+                  Mess Fund & Member Deposits Log
+                </h3>
+                <p className="text-xs text-slate-400">
+                  Total Deposits: ৳{calculations.totalDeposits.toLocaleString()} • Cash in Hand: ৳{calculations.cashInHand.toLocaleString()}
+                </p>
+              </div>
+              {userRole === 'manager' && (
+                <button
+                  onClick={() => setShowAddDeposit(true)}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-purple-500 hover:bg-purple-400 text-white font-semibold text-xs transition-all shadow-lg shadow-purple-500/20"
+                >
+                  <Plus className="w-4 h-4" />
+                  Record Deposit
+                </button>
+              )}
+            </div>
+
+            {/* Deposit List Table */}
+            <div className="overflow-x-auto">
+              <table className="w-full text-left text-xs">
+                <thead>
+                  <tr className="border-b border-slate-800 text-slate-400 font-mono uppercase text-[10px]">
+                    <th className="pb-3 pl-2">Date</th>
+                    <th className="pb-3">Member</th>
+                    <th className="pb-3">Method</th>
+                    <th className="pb-3">Note / TrxID</th>
+                    <th className="pb-3 text-right">Amount</th>
+                    {userRole === 'manager' && <th className="pb-3 text-right pr-2">Action</th>}
+                  </tr>
+                </thead>
+                <tbody className="divide-y divide-slate-800/60">
+                  {deposits.length === 0 ? (
+                    <tr>
+                      <td colSpan={6} className="py-8 text-center text-slate-500">
+                        No deposits recorded yet. Click "Record Deposit" above to log advance funds.
+                      </td>
+                    </tr>
+                  ) : (
+                    deposits.map((d) => (
+                      <tr key={d.id} className="hover:bg-slate-800/30 transition-colors">
+                        <td className="py-3.5 pl-2 font-mono text-slate-400">{d.date}</td>
+                        <td className="py-3.5 font-bold text-white">{d.memberName}</td>
+                        <td className="py-3.5">
+                          <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                            {d.paymentMethod}
+                          </span>
+                        </td>
+                        <td className="py-3.5 text-slate-400 font-mono">{d.note || 'Advance Deposit'}</td>
+                        <td className="py-3.5 text-right font-mono font-bold text-emerald-400 text-sm">
+                          +৳{d.amount.toLocaleString()}
+                        </td>
+                        {userRole === 'manager' && (
+                          <td className="py-3.5 text-right pr-2">
+                            <button
+                              onClick={() => setDeposits((prev) => deleteDepositRecordAction(prev, d.id))}
+                              className="text-slate-500 hover:text-rose-400 transition-colors"
+                            >
+                              <Trash2 className="w-3.5 h-3.5" />
+                            </button>
+                          </td>
+                        )}
+                      </tr>
+                    ))
+                  )}
+                </tbody>
+              </table>
+            </div>
+          </div>
         </div>
       )}
 
@@ -1484,12 +1532,36 @@ export const MessModule: React.FC<MessModuleProps> = ({
               )}
             </div>
 
-            {/* Cutoff Time Notification Banner */}
-            <div className="flex items-center gap-2.5 p-3 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300">
-              <Clock className="w-4 h-4 flex-shrink-0 text-amber-400" />
-              <span>
-                <strong>Meal Cut-off Rule:</strong> Next day's meals must be updated before {cutoffTime}. Members can turn off or advance book meals for any upcoming date.
-              </span>
+            {/* Cutoff Time Notification & 1-Click Reminder Actions */}
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300">
+              <div className="flex items-center gap-2.5">
+                <Clock className="w-4 h-4 flex-shrink-0 text-amber-400" />
+                <span>
+                  <strong>Meal Cut-off Rule:</strong> Next day's meals must be updated before {cutoffTime}. Roommates can turn off or advance book meals for tomorrow.
+                </span>
+              </div>
+              <div className="flex items-center gap-2 flex-shrink-0">
+                <button
+                  onClick={handleRequestPushNotification}
+                  className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-all"
+                  title="Enable Browser Notification"
+                >
+                  <Bell className="w-3.5 h-3.5 text-rose-400" />
+                  Push Alert
+                </button>
+                <a
+                  href={`https://wa.me/?text=${encodeURIComponent(
+                    generateMealCutoffText(cutoffTime, 'tomorrow')
+                  )}`}
+                  target="_blank"
+                  rel="noreferrer"
+                  className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-all"
+                  title="Send Cutoff Notice to WhatsApp Group"
+                >
+                  <MessageCircle className="w-3.5 h-3.5" />
+                  WhatsApp Alert
+                </a>
+              </div>
             </div>
           </div>
 
@@ -1685,367 +1757,224 @@ export const MessModule: React.FC<MessModuleProps> = ({
         </div>
       )}
 
-      {/* 5. SUB-TAB 3: EXPENSE & BAZAR MONITORING */}
+      {/* 5. SUB-TAB 2: EXPENSE & BAZAR MONITORING + SHOPPING WISHLIST */}
       {activeTab === 'bazar' && (
         <div className="space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
+          {/* Top Header Card */}
+          <div className="bg-[#0E131F] rounded-3xl p-5 sm:p-6 border border-slate-800/80 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+              <h3 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
                 <ShoppingBag className="w-5 h-5 text-amber-400" />
-                Daily Bazar & Expenses (Total: ৳{computedMarketCost.toLocaleString()})
+                Bazar & Grocery Management (বাজার ও ফর্দ)
               </h3>
-              <p className="text-xs text-slate-400">
-                Daily groceries log, item breakdowns, and memo vouchers
+              <p className="text-xs text-slate-400 mt-1 font-mono">
+                Total Bazar Spent: <span className="text-amber-300 font-bold">৳{computedMarketCost.toLocaleString()}</span> • Cash Fund in Hand: <span className={`font-bold ${calculations.cashInHand >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>৳{calculations.cashInHand.toLocaleString()}</span>
               </p>
             </div>
-            {userRole === 'manager' && (
-              <button
-                onClick={() => setShowAddBazar(true)}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs transition-all shadow-lg shadow-amber-500/20"
+            <div className="flex flex-wrap items-center gap-2.5">
+              <a
+                href={`https://wa.me/?text=${encodeURIComponent(
+                  generateBazarDutyText('Flatmate', 'Tomorrow', 3500)
+                )}`}
+                target="_blank"
+                rel="noreferrer"
+                className="px-3.5 py-2 rounded-2xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 text-xs font-semibold flex items-center gap-1.5 transition-all"
+                title="Send WhatsApp reminder to tomorrow's shopper"
               >
-                <Plus className="w-4 h-4" />
-                Add Bazar Entry
-              </button>
-            )}
-          </div>
+                <MessageCircle className="w-3.5 h-3.5 text-amber-400" />
+                <span>Bazar Duty WhatsApp Notice</span>
+              </a>
 
-          {/* Bazar Log Cards */}
-          <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
-            {bazarExpenses.length === 0 ? (
-              <div className="col-span-full bg-[#0E131F] rounded-3xl p-8 border border-dashed border-slate-800 text-center space-y-3">
-                <ShoppingBag className="w-10 h-10 text-slate-600 mx-auto" />
-                <div className="text-sm font-semibold text-slate-300">No bazar expenses recorded yet</div>
-                <p className="text-xs text-slate-500 max-w-sm mx-auto">
-                  Click the "Add Bazar Entry" button above to log daily groceries, amounts, and receipt photos.
-                </p>
-                {userRole === 'manager' && (
-                  <button
-                    onClick={() => setShowAddBazar(true)}
-                    className="px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs transition-all shadow-md inline-flex items-center gap-1.5"
-                  >
-                    <Plus className="w-4 h-4" /> Add First Bazar
-                  </button>
-                )}
-              </div>
-            ) : (
-              bazarExpenses.map((b) => (
-              <div
-                key={b.id}
-                className="bg-[#0E131F] rounded-3xl p-5 border border-slate-800/80 shadow-lg space-y-3"
-              >
-                <div className="flex items-center justify-between pb-3 border-b border-slate-800/60">
-                  <div>
-                    <div className="text-xs font-mono text-amber-400 font-semibold">{b.date}</div>
-                    <div className="font-bold text-white text-base mt-0.5">{b.title}</div>
-                  </div>
-                  <div className="text-right">
-                    <div className="text-lg font-black text-emerald-400 font-mono">
-                      ৳{b.amount.toLocaleString()}
-                    </div>
-                    <div className="text-[11px] text-slate-400 font-mono">
-                      Shopper: {b.shopperName}
-                    </div>
-                  </div>
-                </div>
-
-                {b.items && (
-                  <div className="text-xs text-slate-300 bg-[#070A12] p-3 rounded-2xl border border-slate-800/60 font-sans leading-relaxed">
-                    {b.items}
-                  </div>
-                )}
-
-                <div className="flex items-center justify-between pt-2">
-                  {b.receiptImage ? (
-                    <button
-                      onClick={() => setViewReceiptUrl(b.receiptImage || null)}
-                      className="flex items-center gap-1.5 text-xs text-sky-400 hover:text-sky-300 font-medium"
-                    >
-                      <Receipt className="w-3.5 h-3.5" />
-                      View Memo Receipt
-                    </button>
-                  ) : (
-                    <span className="text-[11px] text-slate-600 font-mono">No Receipt</span>
-                  )}
-
-                  {userRole === 'manager' && (
-                    <button
-                      onClick={() => setBazarExpenses((prev) => deleteBazarExpenseAction(prev, b.id))}
-                      className="text-xs text-slate-500 hover:text-rose-400 transition-colors"
-                      title="Delete Entry"
-                    >
-                      <Trash2 className="w-3.5 h-3.5" />
-                    </button>
-                  )}
-                </div>
-              </div>
-            ))
-          )}
-          </div>
-        </div>
-      )}
-
-      {/* 6. SUB-TAB 4: FUND & DEPOSIT MANAGEMENT */}
-      {activeTab === 'deposits' && (
-        <div className="space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
-                <Wallet className="w-5 h-5 text-purple-400" />
-                Mess Fund & Member Deposits Log
-              </h3>
-              <p className="text-xs text-slate-400">
-                Total Deposits: ৳{calculations.totalDeposits.toLocaleString()} • Cash in Hand: ৳{calculations.cashInHand.toLocaleString()}
-              </p>
-            </div>
-            {userRole === 'manager' && (
-              <button
-                onClick={() => setShowAddDeposit(true)}
-                className="flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-purple-500 hover:bg-purple-400 text-white font-semibold text-xs transition-all shadow-lg shadow-purple-500/20"
-              >
-                <Plus className="w-4 h-4" />
-                Record Deposit
-              </button>
-            )}
-          </div>
-
-          {/* Deposit List */}
-          <div className="bg-[#0E131F] rounded-3xl p-5 border border-slate-800/80 shadow-xl">
-            <div className="overflow-x-auto">
-              <table className="w-full text-left text-xs">
-                <thead>
-                  <tr className="border-b border-slate-800 text-slate-400 font-mono uppercase text-[10px]">
-                    <th className="pb-3 pl-2">Date</th>
-                    <th className="pb-3">Member</th>
-                    <th className="pb-3">Method</th>
-                    <th className="pb-3">Note / TrxID</th>
-                    <th className="pb-3 text-right">Amount</th>
-                    {userRole === 'manager' && <th className="pb-3 text-right pr-2">Action</th>}
-                  </tr>
-                </thead>
-                <tbody className="divide-y divide-slate-800/60">
-                  {deposits.length === 0 ? (
-                    <tr>
-                      <td colSpan={6} className="py-8 text-center text-slate-500">
-                        No deposits recorded yet. Click "Record Deposit" above to log advance funds.
-                      </td>
-                    </tr>
-                  ) : (
-                    deposits.map((d) => (
-                      <tr key={d.id} className="hover:bg-slate-800/30 transition-colors">
-                        <td className="py-3.5 pl-2 font-mono text-slate-400">{d.date}</td>
-                        <td className="py-3.5 font-bold text-white">{d.memberName}</td>
-                        <td className="py-3.5">
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-purple-500/20 text-purple-300 border border-purple-500/30">
-                            {d.paymentMethod}
-                          </span>
-                        </td>
-                        <td className="py-3.5 text-slate-400 font-mono">{d.note || 'Advance Deposit'}</td>
-                        <td className="py-3.5 text-right font-mono font-bold text-emerald-400 text-sm">
-                          +৳{d.amount.toLocaleString()}
-                        </td>
-                        {userRole === 'manager' && (
-                          <td className="py-3.5 text-right pr-2">
-                            <button
-                              onClick={() => setDeposits((prev) => deleteDepositRecordAction(prev, d.id))}
-                              className="text-slate-500 hover:text-rose-400 transition-colors"
-                            >
-                              <Trash2 className="w-3.5 h-3.5" />
-                            </button>
-                          </td>
-                        )}
-                      </tr>
-                    ))
-                  )}
-                </tbody>
-              </table>
+              {userRole === 'manager' && (
+                <button
+                  onClick={() => setShowAddBazar(true)}
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs transition-all shadow-lg shadow-amber-500/20"
+                >
+                  <Plus className="w-4 h-4" />
+                  + Add Bazar Entry
+                </button>
+              )}
             </div>
           </div>
-        </div>
-      )}
 
-      {/* 7. SUB-TAB 5: SHARED SHOPPING LIST (WISHLIST) */}
-      {activeTab === 'wishlist' && (
-        <div className="space-y-6">
-          <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-            <div>
-              <h3 className="text-lg font-bold text-white flex items-center gap-2">
+          {/* Section 1: Shared Shopping List / ফর্দ (Wishlist) */}
+          <div className="bg-[#0E131F] rounded-3xl p-5 sm:p-6 border border-slate-800/80 shadow-xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800/60">
+              <div className="flex items-center gap-2">
                 <ListChecks className="w-5 h-5 text-teal-400" />
-                Shared Mess Shopping Wishlist
-              </h3>
-              <p className="text-xs text-slate-400">
-                Request groceries & household items needed for the flat
-              </p>
-            </div>
-          </div>
-
-          {/* Add Item Form */}
-          <form
-            onSubmit={handleAddShoppingItem}
-            className="bg-[#0E131F] rounded-3xl p-5 border border-slate-800/80 shadow-xl flex flex-col sm:flex-row gap-3"
-          >
-            <input
-              type="text"
-              placeholder="What is needed? (e.g. Soybean Oil 5L, Miniket Rice 25kg)"
-              value={newWishItem}
-              onChange={(e) => setNewWishItem(e.target.value)}
-              className="flex-1 bg-[#070A12] border border-slate-800 rounded-2xl px-4 py-2.5 text-sm text-white focus:border-teal-400 focus:outline-none"
-            />
-            <input
-              type="text"
-              placeholder="Quantity (optional)"
-              value={newWishQuantity}
-              onChange={(e) => setNewWishQuantity(e.target.value)}
-              className="w-full sm:w-36 bg-[#070A12] border border-slate-800 rounded-2xl px-4 py-2.5 text-sm text-white focus:border-teal-400 focus:outline-none"
-            />
-            <button
-              type="submit"
-              className="px-5 py-2.5 rounded-2xl bg-teal-500 hover:bg-teal-400 text-black font-semibold text-xs transition-all shadow-lg shadow-teal-500/20"
-            >
-              Add Item
-            </button>
-          </form>
-
-          {/* List items */}
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-3.5">
-            {shoppingList.length === 0 ? (
-              <div className="col-span-full bg-[#0E131F] rounded-3xl p-8 border border-dashed border-slate-800 text-center space-y-2">
-                <ListChecks className="w-8 h-8 text-slate-600 mx-auto" />
-                <div className="text-sm font-semibold text-slate-300">Shopping list is empty</div>
-                <p className="text-xs text-slate-500">Add household items needed for the flat using the form above.</p>
+                <h4 className="text-sm sm:text-base font-bold text-white">
+                  Shared Shopping List / ফর্দ ({shoppingList.filter((s) => !s.isBought).length} items pending)
+                </h4>
               </div>
-            ) : (
-              shoppingList.map((item) => (
-              <div
-                key={item.id}
-                className={`bg-[#0E131F] rounded-3xl p-4 border flex items-center justify-between gap-4 transition-all ${
-                  item.isBought
-                    ? 'border-slate-800/40 opacity-50 bg-[#070A12]'
-                    : 'border-slate-800/80 hover:border-teal-500/40'
-                }`}
+              <span className="text-[11px] text-slate-400">
+                Request groceries & items needed for the flat
+              </span>
+            </div>
+
+            {/* Add Item Form */}
+            <form
+              onSubmit={handleAddShoppingItem}
+              className="flex flex-col sm:flex-row gap-2.5"
+            >
+              <input
+                type="text"
+                placeholder="What is needed? (e.g. Soybean Oil 5L, Miniket Rice 25kg, Salt)"
+                value={newWishItem}
+                onChange={(e) => setNewWishItem(e.target.value)}
+                className="flex-1 bg-[#070A12] border border-slate-800 rounded-2xl px-4 py-2.5 text-xs sm:text-sm text-white focus:border-teal-400 focus:outline-none"
+              />
+              <input
+                type="text"
+                placeholder="Qty / Weight (e.g. 5L, 2kg)"
+                value={newWishQuantity}
+                onChange={(e) => setNewWishQuantity(e.target.value)}
+                className="w-full sm:w-40 bg-[#070A12] border border-slate-800 rounded-2xl px-4 py-2.5 text-xs sm:text-sm text-white focus:border-teal-400 focus:outline-none"
+              />
+              <button
+                type="submit"
+                className="px-5 py-2.5 rounded-2xl bg-teal-500 hover:bg-teal-400 text-black font-bold text-xs transition-all shadow-md shadow-teal-500/20 whitespace-nowrap"
               >
-                <div className="flex items-center gap-3">
-                  <button
-                    onClick={() => setShoppingList((prev) => toggleShoppingItemBoughtAction(prev, item.id))}
-                    className={`w-6 h-6 rounded-lg flex items-center justify-center border transition-all ${
+                + Add to List
+              </button>
+            </form>
+
+            {/* Wishlist Items Grid */}
+            <div className="grid grid-cols-1 md:grid-cols-2 gap-3 pt-2">
+              {shoppingList.length === 0 ? (
+                <div className="col-span-full py-6 text-center text-slate-500 text-xs">
+                  Shopping list is empty. Add grocery or household items needed for the flat using the form above.
+                </div>
+              ) : (
+                shoppingList.map((item) => (
+                  <div
+                    key={item.id}
+                    className={`rounded-2xl p-3.5 border flex items-center justify-between gap-3 transition-all ${
                       item.isBought
-                        ? 'bg-teal-500 border-teal-500 text-black'
-                        : 'border-slate-700 bg-[#070A12]'
+                        ? 'border-slate-800/40 opacity-50 bg-[#070A12]'
+                        : 'border-slate-800/80 bg-[#070A12] hover:border-teal-500/40'
                     }`}
                   >
-                    {item.isBought && <CheckCircle2 className="w-4 h-4" />}
-                  </button>
-                  <div>
-                    <div className={`text-sm font-semibold text-white ${item.isBought ? 'line-through text-slate-500' : ''}`}>
-                      {item.item}
+                    <div className="flex items-center gap-3">
+                      <button
+                        onClick={() => setShoppingList((prev) => toggleShoppingItemBoughtAction(prev, item.id))}
+                        className={`w-6 h-6 rounded-lg flex items-center justify-center border transition-all ${
+                          item.isBought
+                            ? 'bg-teal-500 border-teal-500 text-black'
+                            : 'border-slate-700 bg-slate-900 text-slate-400'
+                        }`}
+                        title={item.isBought ? 'Mark as not bought' : 'Mark as bought'}
+                      >
+                        {item.isBought && <CheckCircle2 className="w-4 h-4" />}
+                      </button>
+                      <div>
+                        <div className={`text-xs sm:text-sm font-semibold text-white ${item.isBought ? 'line-through text-slate-500' : ''}`}>
+                          {item.item}
+                        </div>
+                        <div className="text-[10px] text-slate-400 font-mono">
+                          {item.quantity && <span className="text-teal-300 font-semibold">{item.quantity} • </span>}
+                          <span>Requested by: {item.requestedBy}</span>
+                        </div>
+                      </div>
                     </div>
-                    <div className="text-[11px] text-slate-400 font-mono">
-                      {item.quantity && <span>{item.quantity} • </span>}
-                      <span>Requested by: {item.requestedBy}</span>
+
+                    <div className="flex items-center gap-1.5">
+                      {!item.isBought && userRole === 'manager' && (
+                        <button
+                          onClick={() => handleConvertWishToBazar(item)}
+                          className="text-[11px] px-2.5 py-1 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 border border-teal-500/30 transition-all font-medium whitespace-nowrap"
+                          title="Convert this item into a recorded Bazar Entry"
+                        >
+                          Convert to Bazar
+                        </button>
+                      )}
+                      <button
+                        onClick={() => setShoppingList((prev) => deleteShoppingItemAction(prev, item.id))}
+                        className="text-slate-500 hover:text-rose-400 p-1 transition-colors"
+                        title="Delete item"
+                      >
+                        <Trash2 className="w-3.5 h-3.5" />
+                      </button>
                     </div>
                   </div>
-                </div>
-
-                <div className="flex items-center gap-2">
-                  {!item.isBought && userRole === 'manager' && (
-                    <button
-                      onClick={() => handleConvertWishToBazar(item)}
-                      className="text-xs px-2.5 py-1 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 border border-teal-500/30 transition-all font-medium"
-                      title="Convert to Bazar Entry"
-                    >
-                      Convert to Bazar
-                    </button>
-                  )}
-                  <button
-                    onClick={() => setShoppingList((prev) => deleteShoppingItemAction(prev, item.id))}
-                    className="text-slate-500 hover:text-rose-400 transition-colors"
-                  >
-                    <Trash2 className="w-3.5 h-3.5" />
-                  </button>
-                </div>
-              </div>
-            ))
-          )}
-          </div>
-        </div>
-      )}
-
-      {/* 8. SUB-TAB 6: NOTIFICATIONS & ALERTS */}
-      {activeTab === 'alerts' && (
-        <div className="space-y-6">
-          <div>
-            <h3 className="text-lg font-bold text-white flex items-center gap-2">
-              <Bell className="w-5 h-5 text-rose-400" />
-              Mess Alerts & Notification Center
-            </h3>
-            <p className="text-xs text-slate-400">
-              Send cutoff reminders, bazar duty notices, and payment reminders
-            </p>
+                ))
+              )}
+            </div>
           </div>
 
-          <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
-            {/* Cutoff Alert Box */}
-            <div className="bg-[#0E131F] rounded-3xl p-6 border border-slate-800/80 shadow-xl space-y-4">
-              <div className="flex items-center gap-3 pb-3 border-b border-slate-800/60">
-                <div className="w-10 h-10 rounded-2xl bg-rose-500/20 text-rose-400 flex items-center justify-center font-bold">
-                  <Clock className="w-5 h-5" />
-                </div>
-                <div>
-                  <h4 className="font-bold text-white text-sm">Meal Cutoff Reminder</h4>
-                  <p className="text-xs text-slate-400">Push notification before {cutoffTime}</p>
-                </div>
-              </div>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Send browser push notifications or WhatsApp messages to remind flatmates to set or cancel their meals before the daily cutoff deadline.
-              </p>
-              <div className="flex flex-wrap gap-2.5 pt-2">
-                <button
-                  onClick={handleRequestPushNotification}
-                  className="px-4 py-2 rounded-2xl bg-rose-500 hover:bg-rose-400 text-white font-semibold text-xs transition-all shadow-lg shadow-rose-500/20 flex items-center gap-1.5"
-                >
-                  <Bell className="w-3.5 h-3.5" />
-                  Browser Push Notification
-                </button>
-                <a
-                  href={`https://wa.me/?text=${encodeURIComponent(
-                    generateMealCutoffText(cutoffTime, 'tomorrow')
-                  )}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="px-4 py-2 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white font-semibold text-xs transition-all flex items-center gap-1.5"
-                >
-                  <MessageCircle className="w-3.5 h-3.5" />
-                  WhatsApp Alert
-                </a>
-              </div>
+          {/* Section 2: Recorded Bazar Expenses Log & Receipt Photos */}
+          <div className="space-y-4">
+            <div className="flex items-center justify-between">
+              <h4 className="text-base font-bold text-white flex items-center gap-2">
+                <Receipt className="w-4 h-4 text-amber-400" />
+                Recorded Bazar Expenses & Memo Receipts
+              </h4>
+              <span className="text-xs text-slate-400 font-mono">
+                {bazarExpenses.length} entries
+              </span>
             </div>
 
-            {/* Bazar Duty Reminder */}
-            <div className="bg-[#0E131F] rounded-3xl p-6 border border-slate-800/80 shadow-xl space-y-4">
-              <div className="flex items-center gap-3 pb-3 border-b border-slate-800/60">
-                <div className="w-10 h-10 rounded-2xl bg-amber-500/20 text-amber-400 flex items-center justify-center font-bold">
-                  <ShoppingBag className="w-5 h-5" />
+            <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
+              {bazarExpenses.length === 0 ? (
+                <div className="col-span-full bg-[#0E131F] rounded-3xl p-8 border border-dashed border-slate-800 text-center space-y-3">
+                  <ShoppingBag className="w-10 h-10 text-slate-600 mx-auto" />
+                  <div className="text-sm font-semibold text-slate-300">No bazar expenses recorded yet</div>
+                  <p className="text-xs text-slate-500 max-w-sm mx-auto">
+                    Click the "+ Add Bazar Entry" button above to log daily groceries, amounts, and receipt photos.
+                  </p>
                 </div>
-                <div>
-                  <h4 className="font-bold text-white text-sm">Bazar Duty Notice</h4>
-                  <p className="text-xs text-slate-400">Remind tomorrow's assigned shopper</p>
-                </div>
-              </div>
-              <p className="text-xs text-slate-300 leading-relaxed">
-                Send a 1-click WhatsApp message to tomorrow's designated shopper with budget estimate and reminder to review the shared wishlist.
-              </p>
-              <div className="pt-2">
-                <a
-                  href={`https://wa.me/?text=${encodeURIComponent(
-                    generateBazarDutyText('Flatmate', 'Tomorrow', 3500)
-                  )}`}
-                  target="_blank"
-                  rel="noreferrer"
-                  className="px-4 py-2 rounded-2xl bg-amber-500 hover:bg-amber-400 text-black font-semibold text-xs transition-all flex items-center gap-1.5 inline-flex"
-                >
-                  <MessageCircle className="w-3.5 h-3.5" />
-                  Send WhatsApp Bazar Notice
-                </a>
-              </div>
+              ) : (
+                bazarExpenses.map((b) => (
+                  <div
+                    key={b.id}
+                    className="bg-[#0E131F] rounded-3xl p-5 border border-slate-800/80 shadow-lg space-y-3"
+                  >
+                    <div className="flex items-center justify-between pb-3 border-b border-slate-800/60">
+                      <div>
+                        <div className="text-xs font-mono text-amber-400 font-semibold">{b.date}</div>
+                        <div className="font-bold text-white text-base mt-0.5">{b.title}</div>
+                      </div>
+                      <div className="text-right">
+                        <div className="text-lg font-black text-emerald-400 font-mono">
+                          ৳{b.amount.toLocaleString()}
+                        </div>
+                        <div className="text-[11px] text-slate-400 font-mono">
+                          Shopper: {b.shopperName}
+                        </div>
+                      </div>
+                    </div>
+
+                    {b.items && (
+                      <div className="text-xs text-slate-300 bg-[#070A12] p-3 rounded-2xl border border-slate-800/60 font-sans leading-relaxed">
+                        {b.items}
+                      </div>
+                    )}
+
+                    <div className="flex items-center justify-between pt-2">
+                      {b.receiptImage ? (
+                        <button
+                          onClick={() => setViewReceiptUrl(b.receiptImage || null)}
+                          className="flex items-center gap-1.5 text-xs text-sky-400 hover:text-sky-300 font-medium"
+                        >
+                          <Receipt className="w-3.5 h-3.5" />
+                          View Memo Receipt
+                        </button>
+                      ) : (
+                        <span className="text-[11px] text-slate-600 font-mono">No Receipt</span>
+                      )}
+
+                      {userRole === 'manager' && (
+                        <button
+                          onClick={() => setBazarExpenses((prev) => deleteBazarExpenseAction(prev, b.id))}
+                          className="text-xs text-slate-500 hover:text-rose-400 transition-colors"
+                          title="Delete Entry"
+                        >
+                          <Trash2 className="w-3.5 h-3.5" />
+                        </button>
+                      )}
+                    </div>
+                  </div>
+                ))
+              )}
             </div>
           </div>
         </div>

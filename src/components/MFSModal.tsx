@@ -123,7 +123,7 @@ export const MFSModal: React.FC<MFSModalProps> = ({
                       backgroundColor: `${brand.color}15`,
                     }}
                   >
-                    {brand.name} ({brand.bengaliName})
+                    {brand.name}
                   </span>
                 </h3>
                 <p className="text-xs text-slate-400">
@@ -164,7 +164,7 @@ export const MFSModal: React.FC<MFSModalProps> = ({
                   }
                 >
                   <span>{b.name}</span>
-                  <span className="text-[10px] opacity-80">{b.bengaliName}</span>
+                  <span className="text-[10px] opacity-80 font-mono">{b.ussdCode}</span>
                 </button>
               );
             })}

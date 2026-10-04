@@ -945,7 +945,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
           }`}
         >
           <Calendar className="w-4 h-4" />
-          <span>1. Daily Meals (মিল হিসাব)</span>
+          <span>1. Daily Meals</span>
         </button>
 
         <button
@@ -957,7 +957,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
           }`}
         >
           <ShoppingBag className="w-4 h-4" />
-          <span>2. Bazar & Shopping (বাজার ও ফর্দ)</span>
+          <span>2. Bazar & Shopping</span>
           {shoppingList.filter((s) => !s.isBought).length > 0 && (
             <span
               className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-black ${
@@ -980,7 +980,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
           }`}
         >
           <Utensils className="w-4 h-4" />
-          <span>3. Accounts & Balances (মাসিক হিসাব ও ফান্ড)</span>
+          <span>3. Accounts & Balances</span>
         </button>
       </div>
 
@@ -1765,7 +1765,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
             <div>
               <h3 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
                 <ShoppingBag className="w-5 h-5 text-amber-400" />
-                Bazar & Grocery Management (বাজার ও ফর্দ)
+                Bazar & Grocery Management
               </h3>
               <p className="text-xs text-slate-400 mt-1 font-mono">
                 Total Bazar Spent: <span className="text-amber-300 font-bold">৳{computedMarketCost.toLocaleString()}</span> • Cash Fund in Hand: <span className={`font-bold ${calculations.cashInHand >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>৳{calculations.cashInHand.toLocaleString()}</span>
@@ -1797,13 +1797,13 @@ export const MessModule: React.FC<MessModuleProps> = ({
             </div>
           </div>
 
-          {/* Section 1: Shared Shopping List / ফর্দ (Wishlist) */}
+          {/* Section 1: Shared Shopping List (Wishlist) */}
           <div className="bg-[#0E131F] rounded-3xl p-5 sm:p-6 border border-slate-800/80 shadow-xl space-y-4">
             <div className="flex items-center justify-between pb-3 border-b border-slate-800/60">
               <div className="flex items-center gap-2">
                 <ListChecks className="w-5 h-5 text-teal-400" />
                 <h4 className="text-sm sm:text-base font-bold text-white">
-                  Shared Shopping List / ফর্দ ({shoppingList.filter((s) => !s.isBought).length} items pending)
+                  Shared Shopping List ({shoppingList.filter((s) => !s.isBought).length} items pending)
                 </h4>
               </div>
               <span className="text-[11px] text-slate-400">

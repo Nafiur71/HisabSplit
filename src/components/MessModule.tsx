@@ -172,6 +172,12 @@ export const MessModule: React.FC<MessModuleProps> = ({
   const [copiedDirectLink, setCopiedDirectLink] = useState<boolean>(false);
   const [toastMessage, setToastMessage] = useState<string | null>(null);
 
+  // Switch Security & Verification Gatekeeper
+  const [switchTargetMess, setSwitchTargetMess] = useState<(MessState & { id: string }) | null>(null);
+  const [switchCodeInput, setSwitchCodeInput] = useState<string>('');
+  const [switchCodeError, setSwitchCodeError] = useState<string | null>(null);
+  const [showSwitchVerifyModal, setShowSwitchVerifyModal] = useState<boolean>(false);
+
   // Dynamic Mess Settings
   const [cutoffTime, setCutoffTime] = useState<string>(
     initialState.settings?.cutoffTime || '22:00'
@@ -350,6 +356,28 @@ export const MessModule: React.FC<MessModuleProps> = ({
     localStorage.setItem('hisabsplit_active_mess_id', targetMess.id);
     setShowMessSwitcherModal(false);
     triggerToast(`Switched to "${targetMess.messName}"`);
+  };
+
+  // Handler: Verify Access Code before Switching Mess (Prevents unauthorized mess snooping)
+  const handleVerifyAndSwitch = (e: React.FormEvent) => {
+    e.preventDefault();
+    if (!switchTargetMess) return;
+    const cleanInput = switchCodeInput.trim().toUpperCase();
+    const targetCode = switchTargetMess.settings?.inviteCode?.trim().toUpperCase();
+    const targetPin = switchTargetMess.settings?.managerPin?.trim();
+
+    if (cleanInput === targetCode || switchCodeInput.trim() === targetPin) {
+      handleSwitchMess(switchTargetMess);
+      setShowSwitchVerifyModal(false);
+      setSwitchTargetMess(null);
+      setSwitchCodeInput('');
+      setSwitchCodeError(null);
+      triggerToast(`🔓 Authorized! Switched to "${switchTargetMess.messName}"`);
+    } else {
+      setSwitchCodeError(
+        `Access Denied: Incorrect code. You do not have permission to access "${switchTargetMess.messName}".`
+      );
+    }
   };
 
   // Handler: Create New Isolated Mess
@@ -2708,9 +2736,14 @@ export const MessModule: React.FC<MessModuleProps> = ({
                         <span className="font-bold text-sm text-white truncate">
                           {m.messName}
                         </span>
-                        {isActive && (
+                        {isActive ? (
                           <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                             Active
+                          </span>
+                        ) : (
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-amber-400 border border-amber-500/20 flex items-center gap-1">
+                            <Lock className="w-2.5 h-2.5" />
+                            Protected
                           </span>
                         )}
                       </div>
@@ -2719,20 +2752,31 @@ export const MessModule: React.FC<MessModuleProps> = ({
                         <span>•</span>
                         <span>{memberCount} Roommates</span>
                         <span>•</span>
-                        <span className="text-sky-400 font-bold">{m.settings?.inviteCode}</span>
+                        {isActive ? (
+                          <span className="text-sky-400 font-bold">{m.settings?.inviteCode}</span>
+                        ) : (
+                          <span className="text-slate-500 tracking-wider">Code: ••••••</span>
+                        )}
                       </div>
                     </div>
 
                     <div className="flex items-center gap-2">
                       {!isActive ? (
                         <button
-                          onClick={() => handleSwitchMess(m)}
-                          className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-xs font-semibold text-white transition-all shadow-sm"
+                          onClick={() => {
+                            setSwitchTargetMess(m);
+                            setSwitchCodeInput('');
+                            setSwitchCodeError(null);
+                            setShowSwitchVerifyModal(true);
+                          }}
+                          className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-emerald-500/20 text-xs font-semibold text-emerald-400 hover:text-emerald-300 border border-slate-700 hover:border-emerald-500/40 transition-all flex items-center gap-1.5 shadow-sm"
                         >
-                          Switch
+                          <Lock className="w-3 h-3 text-amber-400" />
+                          Unlock & Switch
                         </button>
                       ) : (
-                        <span className="text-xs text-emerald-400 font-semibold px-2">
+                        <span className="text-xs text-emerald-400 font-semibold px-2 flex items-center gap-1">
+                          <CheckCircle2 className="w-3.5 h-3.5" />
                           Current
                         </span>
                       )}
@@ -3032,7 +3076,72 @@ export const MessModule: React.FC<MessModuleProps> = ({
           </div>
         </div>
       )}
+
+      {/* MODAL 12: SWITCH ACCESS VERIFICATION GATEKEEPER */}
+      {showSwitchVerifyModal && switchTargetMess && (
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
+          <div className="bg-[#0E131F] border border-slate-800 rounded-3xl p-6 w-full max-w-sm shadow-2xl space-y-4 text-center">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 mx-auto flex items-center justify-center">
+              <Lock className="w-6 h-6" />
+            </div>
+            <div>
+              <h3 className="text-base font-bold text-white">Private Mess Access</h3>
+              <p className="text-xs text-slate-400 mt-1">
+                Enter the secret Mess Code or Manager PIN for <strong className="text-white">"{switchTargetMess.messName}"</strong> to switch.
+              </p>
+            </div>
+
+            <form onSubmit={handleVerifyAndSwitch} className="space-y-3.5 text-xs text-left">
+              <div>
+                <label className="text-slate-300 font-medium block mb-1">
+                  Mess Code or Manager PIN
+                </label>
+                <input
+                  type="password"
+                  autoFocus
+                  required
+                  placeholder="Enter code (e.g. MES-XXXX or PIN)"
+                  value={switchCodeInput}
+                  onChange={(e) => {
+                    setSwitchCodeInput(e.target.value);
+                    setSwitchCodeError(null);
+                  }}
+                  className="w-full text-center text-sm font-mono tracking-widest bg-[#070A12] border border-slate-800 rounded-xl py-2.5 text-white focus:border-amber-400 focus:outline-none"
+                />
+              </div>
+
+              {switchCodeError && (
+                <div className="p-2.5 rounded-xl bg-rose-500/10 border border-rose-500/30 text-rose-400 text-[11px] text-center font-medium">
+                  {switchCodeError}
+                </div>
+              )}
+
+              <div className="flex gap-2 pt-1">
+                <button
+                  type="button"
+                  onClick={() => {
+                    setShowSwitchVerifyModal(false);
+                    setSwitchTargetMess(null);
+                    setSwitchCodeInput('');
+                    setSwitchCodeError(null);
+                  }}
+                  className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
+                >
+                  Cancel
+                </button>
+                <button
+                  type="submit"
+                  className="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold transition-all shadow-md shadow-amber-500/20"
+                >
+                  Verify & Switch
+                </button>
+              </div>
+            </form>
+          </div>
+        </div>
+      )}
     </div>
   );
 };
+
 

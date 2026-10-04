@@ -165,7 +165,7 @@ export const INITIAL_TURF_STATE: TurfState & { id: string } = {
 export const INITIAL_MESS_STATE: MessState & { id: string } = {
   id: 'current-mess',
   messName: 'Dhanmondi 27 Bachelor Flat',
-  month: 'September 2026',
+  month: 'October 2026',
   totalMarketCost: 15600,
   totalMeals: 240,
   fixedCosts: {
@@ -176,11 +176,111 @@ export const INITIAL_MESS_STATE: MessState & { id: string } = {
     others: 1000,
   },
   memberMeals: [
-    { memberId: 'u1', name: 'Siam Ahmed', phone: '01711223344', mealsCount: 65, fixedCostShare: 8000, depositAmount: 13000, balance: 0 },
-    { memberId: 'u2', name: 'Rafi Hasan', phone: '01822334455', mealsCount: 58, fixedCostShare: 8000, depositAmount: 10500, balance: 0 },
-    { memberId: 'u3', name: 'Tanvir Hossain', phone: '01933445566', mealsCount: 70, fixedCostShare: 8000, depositAmount: 14000, balance: 0 },
-    { memberId: 'u4', name: 'Fahim Shakil', phone: '01644556677', mealsCount: 47, fixedCostShare: 8000, depositAmount: 9000, balance: 0 },
+    { memberId: 'u1', name: 'Siam Ahmed', phone: '01711223344', role: 'manager', roomNo: 'Room 301', mealsCount: 65, fixedCostShare: 8000, depositAmount: 14000, balance: 0 },
+    { memberId: 'u2', name: 'Rafi Hasan', phone: '01822334455', role: 'member', roomNo: 'Room 301', mealsCount: 58, fixedCostShare: 8000, depositAmount: 11000, balance: 0 },
+    { memberId: 'u3', name: 'Tanvir Hossain', phone: '01933445566', role: 'member', roomNo: 'Room 302', mealsCount: 70, fixedCostShare: 8000, depositAmount: 14500, balance: 0 },
+    { memberId: 'u4', name: 'Fahim Shakil', phone: '01644556677', role: 'member', roomNo: 'Room 302', mealsCount: 47, fixedCostShare: 8000, depositAmount: 9500, balance: 0 },
   ],
+  members: [
+    {
+      id: 'u1',
+      name: 'Siam Ahmed',
+      phone: '01711223344',
+      role: 'manager',
+      roomNo: 'Room 301',
+      defaultMeal: { breakfast: 0, lunch: 1, dinner: 1 },
+      fixedCostShare: 8000,
+      depositAmount: 14000,
+    },
+    {
+      id: 'u2',
+      name: 'Rafi Hasan',
+      phone: '01822334455',
+      role: 'member',
+      roomNo: 'Room 301',
+      defaultMeal: { breakfast: 1, lunch: 1, dinner: 1 },
+      fixedCostShare: 8000,
+      depositAmount: 11000,
+    },
+    {
+      id: 'u3',
+      name: 'Tanvir Hossain',
+      phone: '01933445566',
+      role: 'member',
+      roomNo: 'Room 302',
+      defaultMeal: { breakfast: 0, lunch: 1, dinner: 1 },
+      fixedCostShare: 8000,
+      depositAmount: 14500,
+    },
+    {
+      id: 'u4',
+      name: 'Fahim Shakil',
+      phone: '01644556677',
+      role: 'member',
+      roomNo: 'Room 302',
+      defaultMeal: { breakfast: 0, lunch: 1, dinner: 1 },
+      fixedCostShare: 8000,
+      depositAmount: 9500,
+    },
+  ],
+  dailyMeals: [
+    { date: '2026-10-04', memberId: 'u1', breakfast: 0, lunch: 1, dinner: 1, total: 2, isOff: false, note: '' },
+    { date: '2026-10-04', memberId: 'u2', breakfast: 1, lunch: 1, dinner: 1, total: 3, isOff: false, note: '' },
+    { date: '2026-10-04', memberId: 'u3', breakfast: 0, lunch: 1, dinner: 1, total: 2, isOff: false, note: '' },
+    { date: '2026-10-04', memberId: 'u4', breakfast: 0, lunch: 0, dinner: 0, total: 0, isOff: true, note: 'Home visit' },
+    { date: '2026-10-05', memberId: 'u1', breakfast: 0, lunch: 1, dinner: 1, total: 2, isOff: false, note: '' },
+    { date: '2026-10-05', memberId: 'u2', breakfast: 1, lunch: 1, dinner: 1, total: 3, isOff: false, note: '' },
+    { date: '2026-10-05', memberId: 'u3', breakfast: 0, lunch: 1, dinner: 1, total: 2, isOff: false, note: '' },
+    { date: '2026-10-05', memberId: 'u4', breakfast: 0, lunch: 1, dinner: 1, total: 2, isOff: false, note: '' },
+  ],
+  bazarExpenses: [
+    {
+      id: 'bazar-1',
+      date: '2026-10-01',
+      shopperId: 'u1',
+      shopperName: 'Siam Ahmed',
+      amount: 4850,
+      title: 'Kawran Bazar (Beef & Rui Fish)',
+      items: 'Beef 3kg (৳2300), Rui Fish 2.5kg (৳1200), Soybean Oil 5L (৳850), Onion & Garlic (৳500)',
+    },
+    {
+      id: 'bazar-2',
+      date: '2026-10-03',
+      shopperId: 'u3',
+      shopperName: 'Tanvir Hossain',
+      amount: 5200,
+      title: 'Mohammadpur Krishi Market (Rice, Lentils & Oil)',
+      items: 'Miniket Rice 50kg (৳3600), Red Lentils 5kg (৳650), Potatoes & Veggies (৳450), Ginger & Cumin (৳500)',
+    },
+    {
+      id: 'bazar-3',
+      date: '2026-10-04',
+      shopperId: 'u2',
+      shopperName: 'Rafi Hasan',
+      amount: 5550,
+      title: 'Dhanmondi Staff Quarter Market (Chicken & Eggs)',
+      items: 'Broiler Chicken 6kg (৳1250), Sonali Chicken 4kg (৳1400), Eggs 4 Crates (৳1520), Green Chili & Lemon (৳380), Spices (৳1000)',
+    },
+  ],
+  deposits: [
+    { id: 'dep-1', date: '2026-10-01', memberId: 'u1', memberName: 'Siam Ahmed', amount: 14000, paymentMethod: 'Cash', note: 'Advance Monthly Deposit' },
+    { id: 'dep-2', date: '2026-10-01', memberId: 'u2', memberName: 'Rafi Hasan', amount: 11000, paymentMethod: 'bKash', note: 'TrxID: 9JA732BK' },
+    { id: 'dep-3', date: '2026-10-02', memberId: 'u3', memberName: 'Tanvir Hossain', amount: 14500, paymentMethod: 'Nagad', note: 'TrxID: 887BND01' },
+    { id: 'dep-4', date: '2026-10-02', memberId: 'u4', memberName: 'Fahim Shakil', amount: 9500, paymentMethod: 'bKash', note: 'TrxID: 7TY991PP' },
+  ],
+  shoppingList: [
+    { id: 'shop-1', item: 'Miniket Rice 25kg', quantity: '1 Sack', requestedBy: 'Siam', isBought: true, approxCost: 1800, date: '2026-10-02' },
+    { id: 'shop-2', item: 'Teer Mustard Oil', quantity: '2 Liters', requestedBy: 'Rafi', isBought: false, approxCost: 460, date: '2026-10-04' },
+    { id: 'shop-3', item: 'Lux Soap & Harpic', quantity: '4 pcs + 1 bottle', requestedBy: 'Tanvir', isBought: false, approxCost: 380, date: '2026-10-04' },
+    { id: 'shop-4', item: 'Farm Red Eggs', quantity: '1 Crate (30 pcs)', requestedBy: 'Fahim', isBought: false, approxCost: 380, date: '2026-10-05' },
+  ],
+  settings: {
+    cutoffTime: '22:00',
+    inviteCode: 'MESS-D27',
+    autoMealActive: true,
+    managerPhone: '01711223344',
+    managerPin: '1234',
+  },
 };
 
 export const INITIAL_TOUR_STATE: TourState & { id: string } = {
@@ -244,8 +344,23 @@ export async function initializeDatabase(): Promise<void> {
     await db.turf_state.put(INITIAL_TURF_STATE);
     await db.mess_state.put(INITIAL_MESS_STATE);
     await db.tour_state.put(INITIAL_TOUR_STATE);
+  } else {
+    // Ensure at least one mess exists if mess_state is empty
+    const messCount = await db.mess_state.count();
+    if (messCount === 0) {
+      await db.mess_state.put(INITIAL_MESS_STATE);
+    }
   }
 }
+
+export async function getAllMessesFromDb(): Promise<(MessState & { id: string })[]> {
+  return await db.mess_state.toArray();
+}
+
+export async function deleteMessFromDb(messId: string): Promise<void> {
+  await db.mess_state.delete(messId);
+}
+
 
 export async function resetDatabaseToDefault(): Promise<void> {
   await db.users.clear();

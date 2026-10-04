@@ -66,6 +66,74 @@ export interface TurfSplitResult {
 }
 
 // MODULE B: Mess & Sublet Tracker Types
+export type MessRole = 'manager' | 'member';
+
+export interface MessMember {
+  id: string;
+  name: string;
+  phone: string;
+  role: MessRole;
+  roomNo?: string;
+  defaultMeal: {
+    breakfast: number;
+    lunch: number;
+    dinner: number;
+  };
+  fixedCostShare: number;
+  depositAmount: number;
+  avatar?: string;
+}
+
+export interface DailyMealRecord {
+  date: string; // YYYY-MM-DD
+  memberId: string;
+  breakfast: number;
+  lunch: number;
+  dinner: number;
+  total: number;
+  isOff?: boolean;
+  note?: string;
+}
+
+export interface BazarExpenseRecord {
+  id: string;
+  date: string; // YYYY-MM-DD
+  shopperId: string;
+  shopperName: string;
+  amount: number;
+  title: string;
+  items?: string;
+  receiptImage?: string; // base64
+}
+
+export interface ShoppingWishlistItem {
+  id: string;
+  item: string;
+  quantity?: string;
+  requestedBy: string;
+  isBought: boolean;
+  approxCost?: number;
+  date: string;
+}
+
+export interface DepositRecord {
+  id: string;
+  date: string; // YYYY-MM-DD
+  memberId: string;
+  memberName: string;
+  amount: number;
+  paymentMethod: 'bKash' | 'Nagad' | 'Cash' | 'Rocket' | 'Bank';
+  note?: string;
+}
+
+export interface MessSettings {
+  cutoffTime: string; // e.g. "22:00"
+  inviteCode: string; // e.g. "MESS-D27"
+  autoMealActive: boolean;
+  managerPhone?: string;
+  managerPin?: string; // 4-digit PIN e.g. "1234"
+}
+
 export interface MemberMeal {
   memberId: string;
   name: string;
@@ -74,6 +142,8 @@ export interface MemberMeal {
   fixedCostShare: number;
   depositAmount: number; // Advance paid towards mess/market
   balance: number; // Positive = Surplus, Negative = Due
+  role?: MessRole;
+  roomNo?: string;
 }
 
 export interface FixedCostsBreakdown {
@@ -85,12 +155,19 @@ export interface FixedCostsBreakdown {
 }
 
 export interface MessState {
+  id?: string;
   messName: string;
   month: string;
   totalMarketCost: number;
   totalMeals: number;
   memberMeals: MemberMeal[];
   fixedCosts: FixedCostsBreakdown;
+  members?: MessMember[];
+  dailyMeals?: DailyMealRecord[];
+  bazarExpenses?: BazarExpenseRecord[];
+  shoppingList?: ShoppingWishlistItem[];
+  deposits?: DepositRecord[];
+  settings?: MessSettings;
 }
 
 export interface MessCalculationResult {
@@ -101,10 +178,12 @@ export interface MessCalculationResult {
   fixedCostPerHead: number;
   totalExpenses: number;
   totalDeposits: number;
+  cashInHand: number;
   memberCalculations: {
     memberId: string;
     name: string;
     phone?: string;
+    role?: MessRole;
     mealsCount: number;
     mealCost: number;
     fixedCostShare: number;

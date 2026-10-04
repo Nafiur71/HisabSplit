@@ -133,7 +133,7 @@ export const MFS_CONFIG: Record<
 > = {
   bKash: {
     name: 'bKash',
-    bengaliName: 'বিকাশ',
+    bengaliName: 'bKash',
     color: '#E2136E',
     bgHover: 'hover:bg-[#C70059]',
     ussdCode: '*247#',
@@ -141,7 +141,7 @@ export const MFS_CONFIG: Record<
   },
   Nagad: {
     name: 'Nagad',
-    bengaliName: 'নগদ',
+    bengaliName: 'Nagad',
     color: '#F7941E',
     bgHover: 'hover:bg-[#E07D0C]',
     ussdCode: '*167#',
@@ -149,7 +149,7 @@ export const MFS_CONFIG: Record<
   },
   Rocket: {
     name: 'Rocket',
-    bengaliName: 'রকেট',
+    bengaliName: 'Rocket',
     color: '#8C3494',
     bgHover: 'hover:bg-[#722579]',
     ussdCode: '*322#',
@@ -157,7 +157,7 @@ export const MFS_CONFIG: Record<
   },
   Upay: {
     name: 'Upay',
-    bengaliName: 'উপায়',
+    bengaliName: 'Upay',
     color: '#0066B2',
     bgHover: 'hover:bg-[#00508F]',
     ussdCode: '*268#',

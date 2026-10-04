@@ -51,7 +51,12 @@ export function App() {
       const turf = await db.turf_state.get('current-turf');
       if (turf) setTurfState(turf);
 
-      const mess = await db.mess_state.get('current-mess');
+      const savedMessId = localStorage.getItem('hisabsplit_active_mess_id') || 'current-mess';
+      let mess = await db.mess_state.get(savedMessId);
+      if (!mess) {
+        const all = await db.mess_state.toArray();
+        if (all.length > 0) mess = all[0];
+      }
       if (mess) setMessState(mess);
 
       const tour = await db.tour_state.get('current-tour');
@@ -64,6 +69,17 @@ export function App() {
   };
 
   useEffect(() => {
+    // Detect URL query parameter for direct tab or mess invitation link
+    if (typeof window !== 'undefined') {
+      const params = new URLSearchParams(window.location.search);
+      const tabParam = params.get('tab');
+      const inviteParam = params.get('invite') || params.get('code');
+      if (tabParam === 'mess' || inviteParam) {
+        setActiveTab('mess');
+      } else if (tabParam === 'turf' || tabParam === 'tour') {
+        setActiveTab(tabParam);
+      }
+    }
     loadDatabaseStates();
   }, []);
 
@@ -118,7 +134,7 @@ export function App() {
                   Hisab<span className="text-emerald-400">Split</span>
                 </span>
                 <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-slate-400 border border-slate-700/60 hidden sm:inline-block">
-                  হিসাব-স্প্লিট
+                  Smart Splitter
                 </span>
               </div>
             </div>

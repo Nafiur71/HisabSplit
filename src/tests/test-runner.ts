@@ -3,6 +3,9 @@ import {
   calculateMealRate,
   calculateMessCalculations,
   splitFixedCostsEquallyAction,
+  createFreshMessState,
+  exportMessBackupJson,
+  importMessFromJson,
 } from '../controllers/messController';
 import { calculateTourSettlement } from '../controllers/tourController';
 import { generateMFSRequest } from '../controllers/mfsController';
@@ -72,6 +75,34 @@ const m1Calc = messCalculations.memberCalculations.find(m => m.memberId === 'm1'
 assert(m1Calc.individualBill === 14800, `m1 individual bill should be 14,800 BDT (got ${m1Calc.individualBill})`);
 assert(m1Calc.balance === -4800, `m1 balance should be -4800 BDT (Due) (got ${m1Calc.balance})`);
 assert(m1Calc.status === 'due', 'm1 status should be due');
+
+// 2.1 Multi-Mess Creation & Tenant Isolation Testing
+console.log('\n--- Testing Multi-Mess Creation & Tenant Isolation ---');
+const freshMess = createFreshMessState({
+  messName: 'Uttara Sector 11 Bachelor Mess',
+  month: 'November 2026',
+  managerName: 'Kazi Nayeem',
+  managerPhone: '01799887766',
+  managerPin: '8899',
+  houseRent: 25000,
+});
+
+assert(freshMess.messName === 'Uttara Sector 11 Bachelor Mess', 'Fresh mess name matches');
+assert(freshMess.settings?.managerPin === '8899', 'Manager PIN correctly set');
+assert(freshMess.fixedCosts.houseRent === 25000, 'House rent matches');
+assert(freshMess.memberMeals.length === 1, 'Manager is registered as the initial member');
+assert(freshMess.settings?.inviteCode?.startsWith('MES-') === true, 'Invite code generated with prefix');
+
+const exportedJson = exportMessBackupJson(freshMess);
+assert(exportedJson.includes('Uttara Sector 11 Bachelor Mess'), 'Backup JSON contains mess name');
+assert(exportedJson.includes('HisabSplit'), 'Backup JSON is branded');
+
+const importedMess = importMessFromJson(exportedJson);
+assert(importedMess !== null, 'Imported mess should not be null');
+assert(importedMess?.messName === freshMess.messName, 'Imported mess name matches original');
+assert(importedMess?.settings?.inviteCode === freshMess.settings?.inviteCode, 'Imported invite code preserved');
+
+
 
 // 3. TEST MODULE C: Group Tour Splitter (Matrix Settlement Optimization)
 console.log('\n--- Testing Module C: Group Tour Splitter ---');

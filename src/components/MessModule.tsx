@@ -70,6 +70,8 @@ import {
   downloadMessBackupJson,
   importMessFromJson,
   generateMessDirectJoinLink,
+  getLocalDateString,
+  getOffsetDateString,
 } from '../controllers/messController';
 import { db, getAllMessesFromDb, deleteMessFromDb } from '../db/db';
 
@@ -187,9 +189,9 @@ export const MessModule: React.FC<MessModuleProps> = ({
     initialState.settings?.inviteCode || 'MESS-D27'
   );
 
-  // Date selection for Daily Meal Tracker
-  const todayStr = new Date().toISOString().split('T')[0];
-  const tomorrowStr = new Date(Date.now() + 86400000).toISOString().split('T')[0];
+  // Date selection for Daily Meal Tracker (Local timezone safe)
+  const todayStr = getLocalDateString();
+  const tomorrowStr = getOffsetDateString(1);
   const [selectedDate, setSelectedDate] = useState<string>(todayStr);
 
   // Modals
@@ -261,10 +263,11 @@ export const MessModule: React.FC<MessModuleProps> = ({
     });
   }, []);
 
-  // Compute live Bazar total from recorded bazarExpenses if available
-  const computedMarketCost = bazarExpenses.length > 0
-    ? bazarExpenses.reduce((sum, b) => sum + (Math.max(0, Number(b.amount)) || 0), 0)
-    : initialState.totalMarketCost;
+  // Compute live Bazar total from recorded bazarExpenses (pure calculation, 0 if empty)
+  const computedMarketCost = bazarExpenses.reduce(
+    (sum, b) => sum + (Math.max(0, Number(b.amount)) || 0),
+    0
+  );
 
   // Compute live Meal sum from memberMeals
   const computedTotalMeals = memberMeals.reduce(
@@ -493,18 +496,28 @@ export const MessModule: React.FC<MessModuleProps> = ({
 
   // Handler: Split Fixed Costs Equally
   const handleSplitFixedCostsEqually = () => {
+    if (userRole !== 'manager') {
+      alert('Only mess manager can split overhead costs.');
+      return;
+    }
     const updated = splitFixedCostsEquallyAction(memberMeals, fixedCosts);
     setMemberMeals(updated);
     setJustSplitFlash(true);
     setTimeout(() => setJustSplitFlash(false), 2000);
+    triggerToast('Overhead costs split equally across all members.');
   };
 
   // Handler: Add Member
   const handleAddMember = (e: React.FormEvent) => {
     e.preventDefault();
     if (!newMemberName.trim()) return;
+    const newCount = memberMeals.length + 1;
     const defaultFixed =
-      calculations.fixedCostPerHead > 0 ? calculations.fixedCostPerHead : 0;
+      calculations.totalFixedCost > 0
+        ? Math.round(calculations.totalFixedCost / newCount)
+        : calculations.fixedCostPerHead > 0
+        ? calculations.fixedCostPerHead
+        : 0;
     setMemberMeals((prev) =>
       addMessMemberAction(
         prev,
@@ -518,13 +531,41 @@ export const MessModule: React.FC<MessModuleProps> = ({
     setNewMemberName('');
     setNewMemberPhone('');
     setShowAddMember(false);
+    triggerToast(`Added new member: ${newMemberName}`);
   };
 
-  // Handler: Remove Member
+  // Handler: Remove Member (Protected)
   const handleRemoveMember = (memberId: string) => {
-    if (confirm('Are you sure you want to remove this member from the mess?')) {
-      setMemberMeals((prev) => removeMessMemberAction(prev, memberId));
+    if (userRole !== 'manager') {
+      alert('Only mess manager can remove members.');
+      return;
     }
+    const target = memberMeals.find((m) => m.memberId === memberId);
+    if (confirm(`Are you sure you want to remove ${target?.name || 'this member'} from the mess?`)) {
+      setMemberMeals((prev) => removeMessMemberAction(prev, memberId));
+      triggerToast(`Removed ${target?.name || 'member'} from the mess.`);
+    }
+  };
+
+  // Handler: Re-sync monthly meals total from daily meal records
+  const handleSyncMealsFromDailyRecords = () => {
+    if (userRole !== 'manager') {
+      alert('Only mess manager can sync meal totals.');
+      return;
+    }
+    const countMap: Record<string, number> = {};
+    dailyMeals.forEach((dm) => {
+      if (!dm.isOff) {
+        countMap[dm.memberId] = (countMap[dm.memberId] || 0) + (Math.max(0, Number(dm.total)) || 0);
+      }
+    });
+    setMemberMeals((prev) =>
+      prev.map((m) => ({
+        ...m,
+        mealsCount: countMap[m.memberId] ?? 0,
+      }))
+    );
+    triggerToast('Monthly meal totals synchronized from daily meal records.');
   };
 
   // Handler: Clear all demo data / start fresh
@@ -714,6 +755,47 @@ export const MessModule: React.FC<MessModuleProps> = ({
     setShowAddDeposit(false);
   };
 
+  // Handler: Delete Deposit Record (reconciles member deposit balance)
+  const handleDeleteDeposit = (deposit: DepositRecord) => {
+    if (userRole !== 'manager') {
+      alert('Only mess manager can delete deposit records.');
+      return;
+    }
+    if (
+      !confirm(
+        `Are you sure you want to delete the deposit of ৳${deposit.amount.toLocaleString()} for ${deposit.memberName}? This will deduct ৳${deposit.amount.toLocaleString()} from their recorded balance.`
+      )
+    ) {
+      return;
+    }
+    setDeposits((prev) => deleteDepositRecordAction(prev, deposit.id));
+    setMemberMeals((prev) =>
+      prev.map((m) =>
+        m.memberId === deposit.memberId
+          ? { ...m, depositAmount: Math.max(0, (m.depositAmount || 0) - deposit.amount) }
+          : m
+      )
+    );
+    triggerToast(`Removed ৳${deposit.amount.toLocaleString()} deposit for ${deposit.memberName}`);
+  };
+
+  // Handler: Delete Bazar Record with confirmation
+  const handleDeleteBazarExpense = (expense: BazarExpenseRecord) => {
+    if (userRole !== 'manager') {
+      alert('Only mess manager can delete bazar records.');
+      return;
+    }
+    if (
+      !confirm(
+        `Are you sure you want to delete the bazar record "${expense.title}" of ৳${expense.amount.toLocaleString()} by ${expense.shopperName}?`
+      )
+    ) {
+      return;
+    }
+    setBazarExpenses((prev) => deleteBazarExpenseAction(prev, expense.id));
+    triggerToast(`Deleted bazar entry: ${expense.title}`);
+  };
+
   // Handler: Add Shopping List item
   const handleAddShoppingItem = (e: React.FormEvent) => {
     e.preventDefault();
@@ -755,11 +837,11 @@ export const MessModule: React.FC<MessModuleProps> = ({
     }
   };
 
-  // Date step forward/backward
+  // Date step forward/backward (local timezone safe)
   const handleDateShift = (deltaDays: number) => {
-    const current = new Date(selectedDate);
-    current.setDate(current.getDate() + deltaDays);
-    setSelectedDate(current.toISOString().split('T')[0]);
+    const parts = selectedDate.split('-').map(Number);
+    const current = new Date(parts[0], parts[1] - 1, parts[2] + deltaDays);
+    setSelectedDate(getLocalDateString(current));
   };
 
   return (
@@ -787,8 +869,13 @@ export const MessModule: React.FC<MessModuleProps> = ({
                     type="text"
                     value={messName}
                     onChange={(e) => setMessName(e.target.value)}
-                    className="text-lg sm:text-2xl font-black text-white bg-transparent border-b border-transparent hover:border-slate-700 focus:border-emerald-500 focus:outline-none transition-colors"
-                    title="Click to rename mess"
+                    disabled={userRole !== 'manager'}
+                    className={`text-lg sm:text-2xl font-black text-white bg-transparent border-b ${
+                      userRole === 'manager'
+                        ? 'border-transparent hover:border-slate-700 focus:border-emerald-500 cursor-text'
+                        : 'border-transparent cursor-default'
+                    } focus:outline-none transition-colors`}
+                    title={userRole === 'manager' ? 'Click to rename mess' : 'Mess Name (Manager only)'}
                   />
                 </div>
                 <div className="flex items-center gap-2 text-xs text-slate-400">
@@ -797,8 +884,13 @@ export const MessModule: React.FC<MessModuleProps> = ({
                     type="text"
                     value={month}
                     onChange={(e) => setMonth(e.target.value)}
-                    className="bg-transparent text-slate-300 hover:text-white border-b border-transparent hover:border-slate-600 focus:border-emerald-500 focus:outline-none w-28 font-mono text-xs uppercase"
-                    title="Click to edit month"
+                    disabled={userRole !== 'manager'}
+                    className={`bg-transparent ${
+                      userRole === 'manager'
+                        ? 'text-slate-300 hover:text-white border-b border-transparent hover:border-slate-600 focus:border-emerald-500 cursor-text'
+                        : 'text-slate-400 border-transparent cursor-default'
+                    } focus:outline-none w-28 font-mono text-xs uppercase`}
+                    title={userRole === 'manager' ? 'Click to edit month' : 'Accounting Month (Manager only)'}
                   />
                 </div>
               </div>
@@ -1498,8 +1590,9 @@ export const MessModule: React.FC<MessModuleProps> = ({
                         {userRole === 'manager' && (
                           <td className="py-3.5 text-right pr-2">
                             <button
-                              onClick={() => setDeposits((prev) => deleteDepositRecordAction(prev, d.id))}
+                              onClick={() => handleDeleteDeposit(d)}
                               className="text-slate-500 hover:text-rose-400 transition-colors"
+                              title="Delete deposit record"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
                             </button>
@@ -1592,6 +1685,14 @@ export const MessModule: React.FC<MessModuleProps> = ({
                   >
                     <Zap className="w-3.5 h-3.5" />
                     Auto-Fill
+                  </button>
+                  <button
+                    onClick={handleSyncMealsFromDailyRecords}
+                    className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-purple-500/15 hover:bg-purple-500/25 text-purple-300 border border-purple-500/30 text-xs font-semibold transition-all"
+                    title="Recalculate monthly meal totals strictly from all daily meal records"
+                  >
+                    <RotateCcw className="w-3.5 h-3.5 text-purple-400" />
+                    Sync Log Totals
                   </button>
                 </div>
               )}
@@ -2016,7 +2117,12 @@ export const MessModule: React.FC<MessModuleProps> = ({
                         </button>
                       )}
                       <button
-                        onClick={() => setShoppingList((prev) => deleteShoppingItemAction(prev, item.id))}
+                        onClick={() => {
+                          if (confirm(`Remove "${item.item}" from shopping list?`)) {
+                            setShoppingList((prev) => deleteShoppingItemAction(prev, item.id));
+                            triggerToast(`Removed "${item.item}" from shopping list.`);
+                          }
+                        }}
                         className="text-slate-500 hover:text-rose-400 p-1 transition-colors"
                         title="Delete item"
                       >
@@ -2092,7 +2198,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
 
                       {userRole === 'manager' && (
                         <button
-                          onClick={() => setBazarExpenses((prev) => deleteBazarExpenseAction(prev, b.id))}
+                          onClick={() => handleDeleteBazarExpense(b)}
                           className="text-xs text-slate-500 hover:text-rose-400 transition-colors"
                           title="Delete Entry"
                         >

@@ -6,6 +6,10 @@ import {
   createFreshMessState,
   exportMessBackupJson,
   importMessFromJson,
+  getLocalDateString,
+  getOffsetDateString,
+  deleteDepositRecordAction,
+  synchronizeMessState,
 } from '../controllers/messController';
 import { calculateTourSettlement } from '../controllers/tourController';
 import { generateMFSRequest } from '../controllers/mfsController';
@@ -103,6 +107,22 @@ assert(importedMess?.messName === freshMess.messName, 'Imported mess name matche
 assert(importedMess?.settings?.inviteCode === freshMess.settings?.inviteCode, 'Imported invite code preserved');
 
 
+
+// 2.2 Timezone & Audit Fixes Verification
+console.log('\n--- Testing Local Timezone & Data Integrity Fixes ---');
+const todayDateStr = getLocalDateString();
+assert(/^\d{4}-\d{2}-\d{2}$/.test(todayDateStr), `getLocalDateString matches YYYY-MM-DD pattern (got ${todayDateStr})`);
+const tomorrowDateStr = getOffsetDateString(1);
+assert(/^\d{4}-\d{2}-\d{2}$/.test(tomorrowDateStr), `getOffsetDateString matches YYYY-MM-DD pattern (got ${tomorrowDateStr})`);
+
+// Fresh mess without bazarExpenses should strictly have 0 syncedMarketCost (No 15,600 ghost cost fallback)
+const syncedFresh = synchronizeMessState(freshMess);
+assert(syncedFresh.syncedMarketCost === 0, `Fresh mess market cost should be 0 BDT (got ${syncedFresh.syncedMarketCost})`);
+
+// Deposit deletion action reduces array length
+const testDeposits = [{ id: 'd-1', memberId: 'm1', memberName: 'Siam', amount: 5000, date: todayDateStr, paymentMethod: 'bKash' as const }];
+const afterDelete = deleteDepositRecordAction(testDeposits, 'd-1');
+assert(afterDelete.length === 0, 'Deposit deletion action successfully removes the deposit item');
 
 // 3. TEST MODULE C: Group Tour Splitter (Matrix Settlement Optimization)
 console.log('\n--- Testing Module C: Group Tour Splitter ---');

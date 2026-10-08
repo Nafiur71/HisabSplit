@@ -22,6 +22,22 @@ import type {
  * 4. Mess Cash Fund = Total Deposits - (Total Market Cost + Total Paid Fixed Costs)
  */
 
+/**
+ * Format a Date object to YYYY-MM-DD in the user's local timezone (e.g. Bangladesh BST).
+ * Avoids the UTC-boundary bug where toISOString() shifts to yesterday between 12:00 AM and 06:00 AM BST.
+ */
+export function getLocalDateString(d: Date = new Date()): string {
+  const year = d.getFullYear();
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const day = String(d.getDate()).padStart(2, '0');
+  return `${year}-${month}-${day}`;
+}
+
+export function getOffsetDateString(offsetDays: number = 0, baseDate: Date = new Date()): string {
+  const d = new Date(baseDate.getFullYear(), baseDate.getMonth(), baseDate.getDate() + offsetDays);
+  return getLocalDateString(d);
+}
+
 export function calculateMealRate(
   totalMarketCost: number,
   totalMeals: number
@@ -133,9 +149,9 @@ export function synchronizeMessState(state: MessState): {
   calculations: MessCalculationResult;
 } {
   // 1. Calculate synced market cost from bazarExpenses (if any)
-  const bazarTotal = state.bazarExpenses && state.bazarExpenses.length > 0
+  const bazarTotal = Array.isArray(state.bazarExpenses)
     ? state.bazarExpenses.reduce((sum, b) => sum + (Math.max(0, Number(b.amount)) || 0), 0)
-    : state.totalMarketCost;
+    : (state.totalMarketCost || 0);
 
   // 2. Map meal counts from dailyMeals if available
   const mealsByMember: Record<string, number> = {};
@@ -389,7 +405,7 @@ export function addBazarExpenseAction(
   const safeAmount = Math.max(0, Number(amount) || 0);
   const newExpense: BazarExpenseRecord = {
     id: `bazar-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-    date: date || new Date().toISOString().split('T')[0],
+    date: date || getLocalDateString(),
     shopperId,
     shopperName,
     amount: safeAmount,
@@ -422,7 +438,7 @@ export function addDepositRecordAction(
   const safeAmount = Math.max(0, Number(amount) || 0);
   const newDeposit: DepositRecord = {
     id: `dep-${Date.now()}-${Math.random().toString(36).substring(2, 6)}`,
-    date: date || new Date().toISOString().split('T')[0],
+    date: date || getLocalDateString(),
     memberId,
     memberName,
     amount: safeAmount,
@@ -456,7 +472,7 @@ export function addShoppingItemAction(
     quantity: quantity?.trim() || '',
     isBought: false,
     approxCost: approxCost ? Math.max(0, approxCost) : undefined,
-    date: new Date().toISOString().split('T')[0],
+    date: getLocalDateString(),
   };
   return [newItem, ...shoppingList];
 }

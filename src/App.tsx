@@ -92,13 +92,19 @@ export function App() {
   }
 
   return (
-    <div className="min-h-screen w-full bg-[#070A12] text-slate-100 pb-16 font-sans">
+    <div className="min-h-screen w-full bg-[#090D16] text-slate-100 pb-16 font-sans relative selection:bg-emerald-500/20 selection:text-emerald-300">
+      {/* Subtle Ambient Background Depth */}
+      <div className="fixed inset-0 pointer-events-none overflow-hidden z-0">
+        <div className="absolute -top-40 left-1/2 -translate-x-1/2 w-[720px] h-[360px] bg-emerald-500/8 blur-[120px] rounded-full" />
+        <div className="absolute top-1/4 -right-40 w-[400px] h-[300px] bg-sky-500/5 blur-[100px] rounded-full" />
+      </div>
+
       {/* Sleek Top Navigation */}
-      <header className="sticky top-0 z-40 w-full bg-[#070A12]/85 backdrop-blur-2xl border-b border-slate-800/80">
-        <div className="w-full px-4 sm:px-6 md:px-8 xl:px-12 h-16 flex items-center justify-between gap-4">
+      <header className="sticky top-0 z-40 w-full bg-[#090D16]/80 backdrop-blur-xl border-b border-slate-800/80">
+        <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 h-16 flex items-center justify-between gap-4">
           {/* Logo & Mess Branding */}
           <div className="flex items-center gap-3">
-            <div className="w-9 h-9 rounded-2xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-black font-mono font-black text-base shadow-sm">
+            <div className="w-9 h-9 rounded-xl bg-gradient-to-tr from-emerald-500 to-teal-400 flex items-center justify-center text-slate-950 font-mono font-black text-lg shadow-md shadow-emerald-500/20">
               ৳
             </div>
             <div>
@@ -106,8 +112,8 @@ export function App() {
                 <span className="text-base font-bold text-white tracking-tight">
                   Hisab<span className="text-emerald-400">Split</span>
                 </span>
-                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 flex items-center gap-1">
-                  <Utensils className="w-2.5 h-2.5" />
+                <span className="text-[11px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/10 text-emerald-300 border border-emerald-500/25 flex items-center gap-1 font-medium">
+                  <Utensils className="w-3 h-3" />
                   Mess & Meal Manager
                 </span>
               </div>
@@ -131,7 +137,7 @@ export function App() {
 
             <button
               onClick={() => setIsSchemaModalOpen(true)}
-              className="p-2 bg-[#111624] hover:bg-slate-800 text-slate-300 border border-slate-800 rounded-xl text-xs transition-colors"
+              className="p-2 bg-slate-900/80 hover:bg-slate-800 text-slate-300 border border-slate-800 rounded-xl text-xs transition-colors"
               title="Schema & Database"
             >
               <Database className="w-4 h-4 text-slate-400" />
@@ -140,8 +146,8 @@ export function App() {
         </div>
       </header>
 
-      {/* Main App Container (100% Width Full Screen - Exclusively Mess Tracker) */}
-      <main className="w-full px-4 sm:px-6 md:px-8 xl:px-12 pt-6">
+      {/* Main App Container */}
+      <main className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 pt-6 relative z-10">
         <MessModule initialState={messState} onOpenMFS={handleOpenMFS} />
       </main>
 

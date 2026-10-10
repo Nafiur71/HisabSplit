@@ -855,31 +855,31 @@ export const MessModule: React.FC<MessModuleProps> = ({
       )}
 
       {/* 1. Header Bar: Mess Brand, Code, Quick Invite, Role & Tools */}
-      <div className="bg-[#0E131F] rounded-3xl p-4 sm:p-6 border border-slate-800/80 shadow-xl space-y-4">
-        {/* Top Row: Mess Identity, Code Badge & Quick Switch */}
+      <div className="bg-slate-900/60 backdrop-blur-xl rounded-2xl p-4 sm:p-6 border border-slate-800/80 shadow-xl space-y-4">
+        {/* Top Row: Mess Brand, Month, Code & Primary Actions */}
         <div className="flex flex-col md:flex-row md:items-center justify-between gap-4 pb-4 border-b border-slate-800/60">
           <div className="flex flex-wrap items-center gap-3">
-            <div className="flex items-center gap-2.5">
-              <div className="w-10 h-10 rounded-2xl bg-emerald-500/15 border border-emerald-500/30 flex items-center justify-center text-emerald-400 shadow-sm">
-                <Building className="w-5 h-5" />
+            <div className="w-11 h-11 rounded-xl bg-emerald-500/10 border border-emerald-500/20 flex items-center justify-center text-emerald-400 shadow-inner">
+              <Building className="w-5 h-5" />
+            </div>
+            <div>
+              <div className="flex items-center gap-2">
+                <input
+                  type="text"
+                  value={messName}
+                  onChange={(e) => setMessName(e.target.value)}
+                  disabled={userRole !== 'manager'}
+                  className={`text-lg sm:text-2xl font-extrabold text-white bg-transparent border-b ${
+                    userRole === 'manager'
+                      ? 'border-dashed border-slate-700 hover:border-emerald-500 focus:border-emerald-500 cursor-text'
+                      : 'border-transparent cursor-default'
+                  } focus:outline-none transition-colors tracking-tight`}
+                  title={userRole === 'manager' ? 'Click to rename mess' : 'Mess Name (Manager only)'}
+                />
               </div>
-              <div>
-                <div className="flex items-center gap-2">
-                  <input
-                    type="text"
-                    value={messName}
-                    onChange={(e) => setMessName(e.target.value)}
-                    disabled={userRole !== 'manager'}
-                    className={`text-lg sm:text-2xl font-black text-white bg-transparent border-b ${
-                      userRole === 'manager'
-                        ? 'border-transparent hover:border-slate-700 focus:border-emerald-500 cursor-text'
-                        : 'border-transparent cursor-default'
-                    } focus:outline-none transition-colors`}
-                    title={userRole === 'manager' ? 'Click to rename mess' : 'Mess Name (Manager only)'}
-                  />
-                </div>
-                <div className="flex items-center gap-2 text-xs text-slate-400">
-                  <span className="font-mono text-slate-400">Month:</span>
+              <div className="flex flex-wrap items-center gap-2 text-xs text-slate-400 mt-0.5">
+                <div className="flex items-center gap-1.5 bg-slate-950/70 px-2 py-0.5 rounded-md border border-slate-800">
+                  <span className="font-mono text-slate-500 text-[10px] uppercase">Month:</span>
                   <input
                     type="text"
                     value={month}
@@ -887,46 +887,46 @@ export const MessModule: React.FC<MessModuleProps> = ({
                     disabled={userRole !== 'manager'}
                     className={`bg-transparent ${
                       userRole === 'manager'
-                        ? 'text-slate-300 hover:text-white border-b border-transparent hover:border-slate-600 focus:border-emerald-500 cursor-text'
-                        : 'text-slate-400 border-transparent cursor-default'
-                    } focus:outline-none w-28 font-mono text-xs uppercase`}
+                        ? 'text-slate-300 hover:text-white cursor-text focus:outline-none'
+                        : 'text-slate-400 cursor-default'
+                    } w-24 font-mono text-xs uppercase font-medium`}
                     title={userRole === 'manager' ? 'Click to edit month' : 'Accounting Month (Manager only)'}
                   />
                 </div>
+
+                {/* Invite Code Pill with 1-Click Copy */}
+                <button
+                  onClick={() => {
+                    navigator.clipboard.writeText(inviteCode);
+                    triggerToast(`Copied Mess Code: ${inviteCode}`);
+                  }}
+                  className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-emerald-500/10 hover:bg-emerald-500/20 border border-emerald-500/25 text-emerald-300 text-xs font-mono font-medium transition-all"
+                  title="Click to copy Mess Invite Code"
+                >
+                  <Key className="w-3 h-3 text-emerald-400" />
+                  <span>{inviteCode}</span>
+                  <Copy className="w-2.5 h-2.5 text-emerald-400 opacity-70" />
+                </button>
+
+                {/* Mess Switcher Button */}
+                <button
+                  onClick={() => setShowMessSwitcherModal(true)}
+                  className="flex items-center gap-1.5 px-2.5 py-0.5 rounded-md bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 hover:text-white border border-slate-700/60 text-xs font-medium transition-all"
+                  title="Switch or manage multiple messes"
+                >
+                  <Building className="w-3 h-3 text-sky-400" />
+                  <span>Switch</span>
+                  <ChevronDown className="w-2.5 h-2.5 text-slate-400" />
+                </button>
               </div>
             </div>
-
-            {/* Invite Code Pill with 1-Click Copy */}
-            <button
-              onClick={() => {
-                navigator.clipboard.writeText(inviteCode);
-                triggerToast(`Copied Mess Code: ${inviteCode}`);
-              }}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-[#070A12] hover:bg-emerald-500/10 border border-emerald-500/30 text-emerald-300 text-xs font-mono font-bold transition-all shadow-sm"
-              title="Click to copy Mess Invite Code"
-            >
-              <span>🔑</span>
-              <span>{inviteCode}</span>
-              <Copy className="w-3 h-3 text-emerald-400" />
-            </button>
-
-            {/* Mess Switcher Button */}
-            <button
-              onClick={() => setShowMessSwitcherModal(true)}
-              className="flex items-center gap-1.5 px-3 py-1.5 rounded-2xl bg-[#070A12] hover:bg-slate-800 text-slate-300 hover:text-white border border-slate-700/80 text-xs font-semibold transition-all"
-              title="Switch or manage multiple messes"
-            >
-              <Building className="w-3.5 h-3.5 text-sky-400" />
-              <span>Switch Mess</span>
-              <ChevronDown className="w-3 h-3 text-slate-400" />
-            </button>
           </div>
 
-          {/* Top Right Action: Prominent Invite Roommates Button */}
-          <div className="flex items-center gap-2">
+          {/* Top Right Action: Prominent Invite CTA */}
+          <div className="flex items-center gap-2 self-start md:self-center">
             <button
               onClick={() => setShowInviteModal(true)}
-              className="flex items-center justify-center gap-2 px-4 py-2.5 rounded-2xl bg-gradient-to-r from-emerald-500 to-teal-500 hover:from-emerald-400 hover:to-teal-400 text-black font-bold text-xs sm:text-sm shadow-lg shadow-emerald-500/25 transition-all transform hover:scale-[1.02]"
+              className="flex items-center gap-2 px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs sm:text-sm shadow-md shadow-emerald-500/20 transition-all active:scale-95"
               title="Share mess invite code or direct link with roommates"
             >
               <Share2 className="w-4 h-4" />
@@ -939,7 +939,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
         <div className="flex flex-wrap items-center justify-between gap-3 text-xs">
           {/* Role Toggle + Manager Controls */}
           <div className="flex flex-wrap items-center gap-2">
-            <div className="flex items-center bg-[#070A12] border border-slate-800 rounded-2xl p-1">
+            <div className="flex items-center bg-slate-950/80 border border-slate-800 rounded-xl p-0.5">
               <button
                 onClick={() => {
                   if (userRole === 'manager') return;
@@ -951,9 +951,9 @@ export const MessModule: React.FC<MessModuleProps> = ({
                     setShowPinModal(true);
                   }
                 }}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-semibold transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                   userRole === 'manager'
-                    ? 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/40 shadow-sm'
+                    ? 'bg-emerald-500/15 text-emerald-300 border border-emerald-500/30 shadow-sm'
                     : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
@@ -966,9 +966,9 @@ export const MessModule: React.FC<MessModuleProps> = ({
               </button>
               <button
                 onClick={() => setUserRole('member')}
-                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl font-semibold transition-all ${
+                className={`flex items-center gap-1.5 px-3 py-1.5 rounded-lg text-xs font-semibold transition-all ${
                   userRole === 'member'
-                    ? 'bg-sky-500/20 text-sky-400 border border-sky-500/40 shadow-sm'
+                    ? 'bg-sky-500/15 text-sky-300 border border-sky-500/30 shadow-sm'
                     : 'text-slate-400 hover:text-slate-200'
                 }`}
               >
@@ -987,10 +987,10 @@ export const MessModule: React.FC<MessModuleProps> = ({
                     setChangePinSuccess(false);
                     setShowChangePinModal(true);
                   }}
-                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-300 border border-slate-700/60 font-medium transition-all"
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-300 border border-slate-700/60 font-medium transition-all"
                   title="Change 4-digit Manager PIN"
                 >
-                  <Key className="w-3.5 h-3.5 text-amber-400" />
+                  <Key className="w-3 h-3 text-amber-400" />
                   PIN
                 </button>
                 <button
@@ -998,10 +998,10 @@ export const MessModule: React.FC<MessModuleProps> = ({
                     setIsManagerUnlocked(false);
                     setUserRole('member');
                   }}
-                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-rose-300 border border-slate-700/60 font-medium transition-all"
+                  className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-rose-300 border border-slate-700/60 font-medium transition-all"
                   title="Lock Manager Mode"
                 >
-                  <Lock className="w-3.5 h-3.5 text-rose-400" />
+                  <Lock className="w-3 h-3 text-rose-400" />
                   Lock
                 </button>
               </div>
@@ -1010,12 +1010,12 @@ export const MessModule: React.FC<MessModuleProps> = ({
 
           {/* Active Viewer Selector & Quick Reports */}
           <div className="flex flex-wrap items-center gap-2">
-            <div className="flex items-center gap-1.5 bg-[#070A12] border border-slate-800 rounded-2xl px-3 py-1.5 text-slate-300">
+            <div className="flex items-center gap-1.5 bg-slate-950/80 border border-slate-800 rounded-xl px-2.5 py-1 text-slate-300">
               <span className="text-slate-500 text-[10px] uppercase font-mono">Viewing as:</span>
               <select
                 value={activeViewerId}
                 onChange={(e) => setActiveViewerId(e.target.value)}
-                className="bg-transparent text-white font-medium focus:outline-none cursor-pointer"
+                className="bg-transparent text-white font-medium focus:outline-none cursor-pointer text-xs"
               >
                 {memberMeals.map((m) => (
                   <option key={m.memberId} value={m.memberId} className="bg-slate-900 text-white">
@@ -1027,8 +1027,8 @@ export const MessModule: React.FC<MessModuleProps> = ({
 
             <button
               onClick={() => downloadMessCsv(calculations, messName, month)}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 border border-slate-700/60 transition-all"
-              title="Download Excel / CSV Summary"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700/60 transition-all font-medium"
+              title="Download CSV Summary"
             >
               <Download className="w-3.5 h-3.5 text-emerald-400" />
               <span>CSV</span>
@@ -1036,7 +1036,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
 
             <button
               onClick={() => setShowPrintModal(true)}
-              className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-slate-800/80 hover:bg-slate-700/80 text-slate-200 border border-slate-700/60 transition-all"
+              className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-slate-800/80 hover:bg-slate-700 text-slate-200 border border-slate-700/60 transition-all font-medium"
               title="Print Monthly Summary Slip"
             >
               <Printer className="w-3.5 h-3.5 text-amber-400" />
@@ -1046,7 +1046,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
             {userRole === 'manager' && (
               <button
                 onClick={handleClearAllDemoData}
-                className="flex items-center gap-1 px-2.5 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 transition-all"
+                className="flex items-center gap-1 px-2.5 py-1.5 rounded-lg bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/25 transition-all font-medium"
                 title="Clear all demo data and start with an empty mess"
               >
                 <RotateCcw className="w-3.5 h-3.5 text-rose-400" />
@@ -1058,37 +1058,33 @@ export const MessModule: React.FC<MessModuleProps> = ({
       </div>
 
       {/* 2. Sub-Tabs Navigation (3 Core Pillars) */}
-      <div className="grid grid-cols-1 sm:grid-cols-3 gap-2 p-1.5 bg-[#0E131F] border border-slate-800/80 rounded-3xl shadow-lg">
+      <div className="grid grid-cols-1 sm:grid-cols-3 gap-1.5 p-1.5 bg-slate-900/60 border border-slate-800/80 rounded-2xl shadow-lg backdrop-blur-xl">
         <button
           onClick={() => setActiveTab('meals')}
-          className={`flex items-center justify-center gap-2.5 px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold transition-all ${
+          className={`flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
             activeTab === 'meals'
-              ? 'bg-sky-500 text-black shadow-lg shadow-sky-500/25'
-              : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+              ? 'bg-slate-800 text-white shadow-md border border-slate-700/60'
+              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
           }`}
         >
-          <Calendar className="w-4 h-4" />
+          <span className={`w-2 h-2 rounded-full ${activeTab === 'meals' ? 'bg-sky-400 shadow-sm shadow-sky-400/50' : 'bg-slate-600'}`} />
+          <Calendar className="w-4 h-4 text-sky-400" />
           <span>1. Daily Meals</span>
         </button>
 
         <button
           onClick={() => setActiveTab('bazar')}
-          className={`flex items-center justify-center gap-2.5 px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold transition-all relative ${
+          className={`flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl text-xs sm:text-sm font-semibold transition-all relative ${
             activeTab === 'bazar'
-              ? 'bg-amber-500 text-black shadow-lg shadow-amber-500/25'
-              : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+              ? 'bg-slate-800 text-white shadow-md border border-slate-700/60'
+              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
           }`}
         >
-          <ShoppingBag className="w-4 h-4" />
+          <span className={`w-2 h-2 rounded-full ${activeTab === 'bazar' ? 'bg-amber-400 shadow-sm shadow-amber-400/50' : 'bg-slate-600'}`} />
+          <ShoppingBag className="w-4 h-4 text-amber-400" />
           <span>2. Bazar & Shopping</span>
           {shoppingList.filter((s) => !s.isBought).length > 0 && (
-            <span
-              className={`text-[10px] font-mono px-2 py-0.5 rounded-full font-black ${
-                activeTab === 'bazar'
-                  ? 'bg-black text-amber-400'
-                  : 'bg-amber-500/20 text-amber-300 border border-amber-500/40'
-              }`}
-            >
+            <span className="text-[10px] font-mono px-2 py-0.5 rounded-full font-bold bg-amber-500/20 text-amber-300 border border-amber-500/30">
               {shoppingList.filter((s) => !s.isBought).length}
             </span>
           )}
@@ -1096,13 +1092,14 @@ export const MessModule: React.FC<MessModuleProps> = ({
 
         <button
           onClick={() => setActiveTab('overview')}
-          className={`flex items-center justify-center gap-2.5 px-4 py-3 rounded-2xl text-xs sm:text-sm font-bold transition-all ${
+          className={`flex items-center justify-center gap-2.5 px-4 py-3 rounded-xl text-xs sm:text-sm font-semibold transition-all ${
             activeTab === 'overview'
-              ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/25'
-              : 'text-slate-400 hover:text-white hover:bg-slate-800/50'
+              ? 'bg-slate-800 text-white shadow-md border border-slate-700/60'
+              : 'text-slate-400 hover:text-slate-200 hover:bg-slate-800/40'
           }`}
         >
-          <Utensils className="w-4 h-4" />
+          <span className={`w-2 h-2 rounded-full ${activeTab === 'overview' ? 'bg-emerald-400 shadow-sm shadow-emerald-400/50' : 'bg-slate-600'}`} />
+          <Utensils className="w-4 h-4 text-emerald-400" />
           <span>3. Accounts & Balances</span>
         </button>
       </div>
@@ -1113,74 +1110,102 @@ export const MessModule: React.FC<MessModuleProps> = ({
           {/* Top 5 KPI Metrics Cards */}
           <div className="grid grid-cols-2 lg:grid-cols-5 gap-3.5 sm:gap-4">
             {/* Meal Rate Card */}
-            <div className="bg-[#0E131F] rounded-3xl p-5 border border-emerald-500/30 relative overflow-hidden shadow-lg">
-              <div className="absolute top-0 right-0 w-24 h-24 bg-emerald-500/10 rounded-full blur-2xl pointer-events-none" />
-              <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
-                Current Meal Rate
+            <div className="bg-slate-900/60 backdrop-blur-xl rounded-2xl p-4 sm:p-5 border border-slate-800/80 hover:border-slate-700/80 shadow-md transition-all flex flex-col justify-between">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                  Current Meal Rate
+                </span>
+                <div className="w-8 h-8 rounded-lg bg-emerald-500/10 border border-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                  <Utensils className="w-4 h-4" />
+                </div>
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-emerald-400 font-mono tracking-tight">
+              <div className="text-2xl sm:text-3xl font-extrabold text-emerald-400 font-mono tracking-tight">
                 ৳{calculations.mealRate.toFixed(2)}
               </div>
-              <div className="text-[10px] text-slate-400 mt-1 flex items-center gap-1 font-mono">
-                <span>Bazar ÷ Meals</span>
+              <div className="text-[11px] text-slate-500 mt-1 font-mono">
+                Bazar ÷ Consumed Meals
               </div>
             </div>
 
             {/* Total Bazar Card */}
-            <div className="bg-[#0E131F] rounded-3xl p-5 border border-slate-800/80 shadow-lg">
-              <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
-                Total Bazar Expenses
+            <div className="bg-slate-900/60 backdrop-blur-xl rounded-2xl p-4 sm:p-5 border border-slate-800/80 hover:border-slate-700/80 shadow-md transition-all flex flex-col justify-between">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                  Total Bazar
+                </span>
+                <div className="w-8 h-8 rounded-lg bg-sky-500/10 border border-sky-500/20 text-sky-400 flex items-center justify-center">
+                  <ShoppingBag className="w-4 h-4" />
+                </div>
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-white font-mono tracking-tight">
+              <div className="text-2xl sm:text-3xl font-extrabold text-white font-mono tracking-tight">
                 ৳{calculations.totalMarketCost.toLocaleString()}
               </div>
-              <div className="text-[10px] text-slate-400 mt-1 font-mono">
-                {bazarExpenses.length} Bazar Entries
+              <div className="text-[11px] text-slate-500 mt-1 font-mono">
+                {bazarExpenses.length} bazar entries
               </div>
             </div>
 
             {/* Total Meals Card */}
-            <div className="bg-[#0E131F] rounded-3xl p-5 border border-slate-800/80 shadow-lg">
-              <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
-                Total Consumed Meals
+            <div className="bg-slate-900/60 backdrop-blur-xl rounded-2xl p-4 sm:p-5 border border-slate-800/80 hover:border-slate-700/80 shadow-md transition-all flex flex-col justify-between">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                  Total Meals
+                </span>
+                <div className="w-8 h-8 rounded-lg bg-indigo-500/10 border border-indigo-500/20 text-indigo-400 flex items-center justify-center">
+                  <Calendar className="w-4 h-4" />
+                </div>
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-sky-400 font-mono tracking-tight">
+              <div className="text-2xl sm:text-3xl font-extrabold text-sky-400 font-mono tracking-tight">
                 {calculations.totalMeals}
               </div>
-              <div className="text-[10px] text-slate-400 mt-1 font-mono">
-                {memberMeals.length} Members
+              <div className="text-[11px] text-slate-500 mt-1 font-mono">
+                {memberMeals.length} members tracking
               </div>
             </div>
 
             {/* Cash in Hand / Mess Fund Card */}
-            <div className={`bg-[#0E131F] rounded-3xl p-5 border shadow-lg ${
+            <div className={`bg-slate-900/60 backdrop-blur-xl rounded-2xl p-4 sm:p-5 border shadow-md transition-all flex flex-col justify-between ${
               calculations.cashInHand >= 0
-                ? 'border-purple-500/40 bg-gradient-to-br from-[#0E131F] to-purple-950/20'
-                : 'border-rose-500/40 bg-gradient-to-br from-[#0E131F] to-rose-950/20'
+                ? 'border-purple-500/30'
+                : 'border-rose-500/30'
             }`}>
-              <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
-                Mess Cash Fund (In Hand)
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                  Mess Cash Fund
+                </span>
+                <div className={`w-8 h-8 rounded-lg flex items-center justify-center ${
+                  calculations.cashInHand >= 0
+                    ? 'bg-purple-500/10 border border-purple-500/20 text-purple-400'
+                    : 'bg-rose-500/10 border border-rose-500/20 text-rose-400'
+                }`}>
+                  <Wallet className="w-4 h-4" />
+                </div>
               </div>
-              <div className={`text-2xl sm:text-3xl font-black font-mono tracking-tight ${
+              <div className={`text-2xl sm:text-3xl font-extrabold font-mono tracking-tight ${
                 calculations.cashInHand >= 0 ? 'text-purple-400' : 'text-rose-400'
               }`}>
                 ৳{calculations.cashInHand.toLocaleString()}
               </div>
-              <div className="text-[10px] text-slate-400 mt-1 font-mono">
-                Total Deposits - Total Expenses
+              <div className="text-[11px] text-slate-500 mt-1 font-mono">
+                Deposits - Total Expenses
               </div>
             </div>
 
             {/* Total Fixed Overhead Card */}
-            <div className="bg-[#0E131F] rounded-3xl p-5 border border-slate-800/80 shadow-lg col-span-2 lg:col-span-1">
-              <div className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider mb-1">
-                Total Fixed Overhead
+            <div className="bg-slate-900/60 backdrop-blur-xl rounded-2xl p-4 sm:p-5 border border-slate-800/80 hover:border-slate-700/80 shadow-md transition-all flex flex-col justify-between col-span-2 lg:col-span-1">
+              <div className="flex items-center justify-between mb-2">
+                <span className="text-[11px] font-semibold text-slate-400 uppercase tracking-wider">
+                  Fixed Overhead
+                </span>
+                <div className="w-8 h-8 rounded-lg bg-amber-500/10 border border-amber-500/20 text-amber-400 flex items-center justify-center">
+                  <Home className="w-4 h-4" />
+                </div>
               </div>
-              <div className="text-2xl sm:text-3xl font-black text-amber-400 font-mono tracking-tight">
+              <div className="text-2xl sm:text-3xl font-extrabold text-amber-400 font-mono tracking-tight">
                 ৳{calculations.totalFixedCost.toLocaleString()}
               </div>
-              <div className="text-[10px] text-slate-400 mt-1 font-mono">
-                Per Head: ৳{calculations.fixedCostPerHead.toLocaleString()}
+              <div className="text-[11px] text-slate-500 mt-1 font-mono">
+                ৳{calculations.fixedCostPerHead.toLocaleString()} / member
               </div>
             </div>
           </div>
@@ -1189,13 +1214,15 @@ export const MessModule: React.FC<MessModuleProps> = ({
           <div className="grid grid-cols-1 lg:grid-cols-12 gap-6 xl:gap-8 items-start w-full">
             {/* Left Column: Fixed Overhead Breakdown */}
             <div className="lg:col-span-5 xl:col-span-4 space-y-6">
-              <div className="bg-[#0E131F] rounded-3xl p-6 border border-slate-800/80 shadow-xl space-y-5">
-                <div className="flex items-center justify-between pb-4 border-b border-slate-800/60">
-                  <div className="flex items-center gap-2">
-                    <Home className="w-5 h-5 text-amber-400" />
+              <div className="bg-slate-900/60 backdrop-blur-xl rounded-2xl p-5 sm:p-6 border border-slate-800/80 shadow-xl space-y-5">
+                <div className="flex items-center justify-between pb-4 border-b border-slate-800/80">
+                  <div className="flex items-center gap-2.5">
+                    <div className="w-8 h-8 rounded-xl bg-amber-500/10 border border-amber-500/20 flex items-center justify-center text-amber-400">
+                      <Home className="w-4 h-4" />
+                    </div>
                     <div>
-                      <h3 className="text-base font-bold text-white">Fixed Overhead Costs</h3>
-                      <p className="text-[11px] text-slate-400">Split equally each month among members</p>
+                      <h3 className="text-sm sm:text-base font-bold text-white">Fixed Overhead</h3>
+                      <p className="text-[11px] text-slate-400">Split equally among flatmates</p>
                     </div>
                   </div>
                   <button
@@ -1203,8 +1230,8 @@ export const MessModule: React.FC<MessModuleProps> = ({
                     disabled={userRole !== 'manager'}
                     className={`flex items-center gap-1.5 px-3 py-1.5 rounded-xl text-xs font-semibold border transition-all ${
                       userRole === 'manager'
-                        ? 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border-amber-500/30'
-                        : 'opacity-50 cursor-not-allowed bg-slate-800 text-slate-500 border-slate-700'
+                        ? 'bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border-amber-500/30 shadow-sm'
+                        : 'opacity-50 cursor-not-allowed bg-slate-950 text-slate-500 border-slate-800'
                     } ${justSplitFlash ? 'bg-amber-400 text-black scale-105' : ''}`}
                     title="Split fixed costs equally among all members"
                   >
@@ -1215,112 +1242,127 @@ export const MessModule: React.FC<MessModuleProps> = ({
 
                 <div className="space-y-3.5 text-xs">
                   <div>
-                    <label className="text-slate-300 font-medium mb-1 flex items-center justify-between">
+                    <label className="text-slate-300 font-medium mb-1.5 flex items-center justify-between">
                       <span className="flex items-center gap-1.5">
                         <Home className="w-3.5 h-3.5 text-slate-400" /> House Rent
                       </span>
-                      <span className="font-mono text-slate-400">৳</span>
+                      <span className="font-mono text-slate-500">BDT</span>
                     </label>
-                    <input
-                      type="number"
-                      disabled={userRole !== 'manager'}
-                      value={fixedCosts.houseRent || ''}
-                      onChange={(e) =>
-                        setFixedCosts((prev) => ({
-                          ...prev,
-                          houseRent: Math.max(0, Number(e.target.value) || 0),
-                        }))
-                      }
-                      className="w-full bg-[#070A12] border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white font-mono focus:border-amber-400 focus:outline-none transition-colors disabled:opacity-60"
-                    />
+                    <div className="relative">
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-mono text-sm">৳</span>
+                      <input
+                        type="number"
+                        disabled={userRole !== 'manager'}
+                        value={fixedCosts.houseRent || ''}
+                        onChange={(e) =>
+                          setFixedCosts((prev) => ({
+                            ...prev,
+                            houseRent: Math.max(0, Number(e.target.value) || 0),
+                          }))
+                        }
+                        className="w-full bg-slate-950/70 border border-slate-800/80 rounded-xl pl-8 pr-3.5 py-2.5 text-sm text-white font-mono focus:border-amber-400 focus:outline-none transition-colors disabled:opacity-60"
+                      />
+                    </div>
                   </div>
 
                   <div>
-                    <label className="text-slate-300 font-medium mb-1 flex items-center justify-between">
+                    <label className="text-slate-300 font-medium mb-1.5 flex items-center justify-between">
                       <span className="flex items-center gap-1.5">
                         <Sparkles className="w-3.5 h-3.5 text-slate-400" /> Maid / Cook Bill
                       </span>
-                      <span className="font-mono text-slate-400">৳</span>
+                      <span className="font-mono text-slate-500">BDT</span>
                     </label>
-                    <input
-                      type="number"
-                      disabled={userRole !== 'manager'}
-                      value={fixedCosts.maidBill || ''}
-                      onChange={(e) =>
-                        setFixedCosts((prev) => ({
-                          ...prev,
-                          maidBill: Math.max(0, Number(e.target.value) || 0),
-                        }))
-                      }
-                      className="w-full bg-[#070A12] border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white font-mono focus:border-amber-400 focus:outline-none transition-colors disabled:opacity-60"
-                    />
+                    <div className="relative">
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-mono text-sm">৳</span>
+                      <input
+                        type="number"
+                        disabled={userRole !== 'manager'}
+                        value={fixedCosts.maidBill || ''}
+                        onChange={(e) =>
+                          setFixedCosts((prev) => ({
+                            ...prev,
+                            maidBill: Math.max(0, Number(e.target.value) || 0),
+                          }))
+                        }
+                        className="w-full bg-slate-950/70 border border-slate-800/80 rounded-xl pl-8 pr-3.5 py-2.5 text-sm text-white font-mono focus:border-amber-400 focus:outline-none transition-colors disabled:opacity-60"
+                      />
+                    </div>
                   </div>
 
                   <div>
-                    <label className="text-slate-300 font-medium mb-1 flex items-center justify-between">
+                    <label className="text-slate-300 font-medium mb-1.5 flex items-center justify-between">
                       <span className="flex items-center gap-1.5">
                         <Wifi className="w-3.5 h-3.5 text-slate-400" /> Internet & Wi-Fi
                       </span>
-                      <span className="font-mono text-slate-400">৳</span>
+                      <span className="font-mono text-slate-500">BDT</span>
                     </label>
-                    <input
-                      type="number"
-                      disabled={userRole !== 'manager'}
-                      value={fixedCosts.internetBill || ''}
-                      onChange={(e) =>
-                        setFixedCosts((prev) => ({
-                          ...prev,
-                          internetBill: Math.max(0, Number(e.target.value) || 0),
-                        }))
-                      }
-                      className="w-full bg-[#070A12] border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white font-mono focus:border-amber-400 focus:outline-none transition-colors disabled:opacity-60"
-                    />
+                    <div className="relative">
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-mono text-sm">৳</span>
+                      <input
+                        type="number"
+                        disabled={userRole !== 'manager'}
+                        value={fixedCosts.internetBill || ''}
+                        onChange={(e) =>
+                          setFixedCosts((prev) => ({
+                            ...prev,
+                            internetBill: Math.max(0, Number(e.target.value) || 0),
+                          }))
+                        }
+                        className="w-full bg-slate-950/70 border border-slate-800/80 rounded-xl pl-8 pr-3.5 py-2.5 text-sm text-white font-mono focus:border-amber-400 focus:outline-none transition-colors disabled:opacity-60"
+                      />
+                    </div>
                   </div>
 
                   <div>
-                    <label className="text-slate-300 font-medium mb-1 flex items-center justify-between">
+                    <label className="text-slate-300 font-medium mb-1.5 flex items-center justify-between">
                       <span className="flex items-center gap-1.5">
                         <Zap className="w-3.5 h-3.5 text-slate-400" /> Gas & Electricity
                       </span>
-                      <span className="font-mono text-slate-400">৳</span>
+                      <span className="font-mono text-slate-500">BDT</span>
                     </label>
-                    <input
-                      type="number"
-                      disabled={userRole !== 'manager'}
-                      value={fixedCosts.gasElectricity || ''}
-                      onChange={(e) =>
-                        setFixedCosts((prev) => ({
-                          ...prev,
-                          gasElectricity: Math.max(0, Number(e.target.value) || 0),
-                        }))
-                      }
-                      className="w-full bg-[#070A12] border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white font-mono focus:border-amber-400 focus:outline-none transition-colors disabled:opacity-60"
-                    />
+                    <div className="relative">
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-mono text-sm">৳</span>
+                      <input
+                        type="number"
+                        disabled={userRole !== 'manager'}
+                        value={fixedCosts.gasElectricity || ''}
+                        onChange={(e) =>
+                          setFixedCosts((prev) => ({
+                            ...prev,
+                            gasElectricity: Math.max(0, Number(e.target.value) || 0),
+                          }))
+                        }
+                        className="w-full bg-slate-950/70 border border-slate-800/80 rounded-xl pl-8 pr-3.5 py-2.5 text-sm text-white font-mono focus:border-amber-400 focus:outline-none transition-colors disabled:opacity-60"
+                      />
+                    </div>
                   </div>
 
                   <div>
-                    <label className="text-slate-300 font-medium mb-1 flex items-center justify-between">
+                    <label className="text-slate-300 font-medium mb-1.5 flex items-center justify-between">
                       <span>Other Utilities (Trash, Maintenance)</span>
-                      <span className="font-mono text-slate-400">৳</span>
+                      <span className="font-mono text-slate-500">BDT</span>
                     </label>
-                    <input
-                      type="number"
-                      disabled={userRole !== 'manager'}
-                      value={fixedCosts.others || ''}
-                      onChange={(e) =>
-                        setFixedCosts((prev) => ({
-                          ...prev,
-                          others: Math.max(0, Number(e.target.value) || 0),
-                        }))
-                      }
-                      className="w-full bg-[#070A12] border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white font-mono focus:border-amber-400 focus:outline-none transition-colors disabled:opacity-60"
-                    />
+                    <div className="relative">
+                      <span className="absolute left-3.5 top-1/2 -translate-y-1/2 text-slate-500 font-mono text-sm">৳</span>
+                      <input
+                        type="number"
+                        disabled={userRole !== 'manager'}
+                        value={fixedCosts.others || ''}
+                        onChange={(e) =>
+                          setFixedCosts((prev) => ({
+                            ...prev,
+                            others: Math.max(0, Number(e.target.value) || 0),
+                          }))
+                        }
+                        className="w-full bg-slate-950/70 border border-slate-800/80 rounded-xl pl-8 pr-3.5 py-2.5 text-sm text-white font-mono focus:border-amber-400 focus:outline-none transition-colors disabled:opacity-60"
+                      />
+                    </div>
                   </div>
                 </div>
 
-                <div className="pt-3 border-t border-slate-800/60 flex items-center justify-between text-xs font-semibold text-slate-300">
+                <div className="pt-3.5 border-t border-slate-800/80 flex items-center justify-between text-xs font-semibold text-slate-300 bg-slate-950/40 -mx-5 sm:-mx-6 -mb-5 sm:-mb-6 px-5 sm:px-6 py-3.5 rounded-b-2xl">
                   <span>Per Head Fixed Share:</span>
-                  <span className="text-sm font-mono text-amber-400">
+                  <span className="text-sm font-mono text-amber-400 font-bold">
                     ৳{calculations.fixedCostPerHead.toLocaleString()}
                   </span>
                 </div>
@@ -1333,7 +1375,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                 <div>
                   <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
                     <Users className="w-5 h-5 text-emerald-400" />
-                    Individual Member Balances ({memberMeals.length} Members)
+                    Member Balances ({memberMeals.length})
                   </h3>
                   <p className="text-xs text-slate-400">
                     Meal consumption + fixed overhead vs deposits
@@ -1342,7 +1384,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                 {userRole === 'manager' && (
                   <button
                     onClick={() => setShowAddMember(true)}
-                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-xs transition-all shadow-lg shadow-emerald-500/20"
+                    className="flex items-center gap-1.5 px-3.5 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition-all shadow-md shadow-emerald-500/20 active:scale-95"
                   >
                     <UserPlus className="w-4 h-4" />
                     Add Member
@@ -1351,9 +1393,9 @@ export const MessModule: React.FC<MessModuleProps> = ({
               </div>
 
               {/* Members List Cards */}
-              <div className="space-y-3.5">
+              <div className="space-y-3">
                 {calculations.memberCalculations.length === 0 ? (
-                  <div className="bg-[#0E131F] rounded-3xl p-8 border border-dashed border-slate-800 text-center space-y-3">
+                  <div className="bg-slate-900/60 backdrop-blur-xl rounded-2xl p-8 border border-dashed border-slate-800 text-center space-y-3">
                     <Users className="w-10 h-10 text-slate-600 mx-auto" />
                     <div className="text-sm font-semibold text-slate-300">No members added yet</div>
                     <p className="text-xs text-slate-500 max-w-sm mx-auto">
@@ -1362,7 +1404,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                     {userRole === 'manager' && (
                       <button
                         onClick={() => setShowAddMember(true)}
-                        className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-semibold text-xs transition-all shadow-md inline-flex items-center gap-1.5"
+                        className="px-4 py-2 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold text-xs transition-all shadow-md inline-flex items-center gap-1.5"
                       >
                         <UserPlus className="w-4 h-4" /> Add First Member
                       </button>
@@ -1370,182 +1412,182 @@ export const MessModule: React.FC<MessModuleProps> = ({
                   </div>
                 ) : (
                   calculations.memberCalculations.map((m) => {
-                  const targetMember = memberMeals.find((mem) => mem.memberId === m.memberId);
-                  const isViewer = m.memberId === activeViewerId;
+                    const targetMember = memberMeals.find((mem) => mem.memberId === m.memberId);
+                    const isViewer = m.memberId === activeViewerId;
 
-                  return (
-                    <div
-                      key={m.memberId}
-                      className={`bg-[#0E131F] rounded-3xl p-5 border transition-all ${
-                        isViewer
-                          ? 'border-emerald-500/50 bg-gradient-to-r from-[#0E131F] to-emerald-950/20 shadow-lg'
-                          : 'border-slate-800/80 hover:border-slate-700/80'
-                      }`}
-                    >
-                      <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800/60">
-                        {/* Member Identity */}
-                        <div className="flex items-center gap-3">
-                          <div className={`w-11 h-11 rounded-2xl flex items-center justify-center font-bold text-sm ${
-                            m.role === 'manager'
-                              ? 'bg-amber-500/20 text-amber-400 border border-amber-500/30'
-                              : 'bg-emerald-500/20 text-emerald-400 border border-emerald-500/30'
-                          }`}>
-                            {m.name.charAt(0)}
-                          </div>
-                          <div>
-                            <div className="flex items-center gap-2">
-                              <span className="text-base font-bold text-white">{m.name}</span>
-                              {m.role === 'manager' && (
-                                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-amber-500/20 text-amber-300 border border-amber-500/40">
-                                  Manager
-                                </span>
-                              )}
-                              {isViewer && (
-                                <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/40">
-                                  You
-                                </span>
-                              )}
-                            </div>
-                            <div className="text-xs text-slate-400 flex items-center gap-2 mt-0.5 font-mono">
-                              <span>{m.phone || '01XXXXXXXXX'}</span>
-                              {targetMember?.roomNo && (
-                                <>
-                                  <span>•</span>
-                                  <span>{targetMember.roomNo}</span>
-                                </>
-                              )}
-                            </div>
-                          </div>
-                        </div>
-
-                        {/* Balance Badge & MFS Action */}
-                        <div className="flex items-center gap-3 self-end sm:self-center">
-                          <div className="text-right">
-                            <div className="text-[11px] text-slate-400 uppercase font-mono">
-                              {m.balance >= 0 ? 'Surplus (To Receive)' : 'Due (To Pay)'}
-                            </div>
-                            <div className={`text-lg sm:text-xl font-black font-mono tracking-tight ${
-                              m.balance >= 0 ? 'text-emerald-400' : 'text-rose-400'
+                    return (
+                      <div
+                        key={m.memberId}
+                        className={`rounded-2xl p-4 sm:p-5 border transition-all ${
+                          isViewer
+                            ? 'bg-slate-900/90 border-emerald-500/50 shadow-lg shadow-emerald-500/5 ring-1 ring-emerald-500/30'
+                            : 'bg-slate-900/60 backdrop-blur-xl border-slate-800/80 hover:border-slate-700/80'
+                        }`}
+                      >
+                        <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800/60">
+                          {/* Member Identity */}
+                          <div className="flex items-center gap-3">
+                            <div className={`w-11 h-11 rounded-xl flex items-center justify-center font-bold text-sm ${
+                              m.role === 'manager'
+                                ? 'bg-amber-500/15 text-amber-400 border border-amber-500/30'
+                                : 'bg-emerald-500/15 text-emerald-400 border border-emerald-500/30'
                             }`}>
-                              {m.balance >= 0 ? `+৳${m.balance.toLocaleString()}` : `-৳${Math.abs(m.balance).toLocaleString()}`}
+                              {m.name.charAt(0)}
+                            </div>
+                            <div>
+                              <div className="flex items-center gap-2">
+                                <span className="text-sm sm:text-base font-bold text-white">{m.name}</span>
+                                {m.role === 'manager' && (
+                                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-amber-500/15 text-amber-300 border border-amber-500/30">
+                                    Manager
+                                  </span>
+                                )}
+                                {isViewer && (
+                                  <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-emerald-500/15 text-emerald-300 border border-emerald-500/30">
+                                    You
+                                  </span>
+                                )}
+                              </div>
+                              <div className="text-xs text-slate-400 flex items-center gap-2 mt-0.5 font-mono">
+                                <span>{m.phone || '01XXXXXXXXX'}</span>
+                                {targetMember?.roomNo && (
+                                  <>
+                                    <span className="text-slate-600">•</span>
+                                    <span>Room {targetMember.roomNo}</span>
+                                  </>
+                                )}
+                              </div>
                             </div>
                           </div>
 
-                          {/* Instant MFS Button if Member owes money */}
-                          {m.balance < 0 && (
-                            <button
-                              onClick={() =>
-                                onOpenMFS({
-                                  amount: Math.abs(m.balance),
-                                  reason: `${messName} (${month}) Mess Due Bill`,
-                                  recipientName: m.name,
-                                  recipientPhone: m.phone,
-                                })
-                              }
-                              className="px-3 py-2 rounded-2xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-400 border border-rose-500/30 text-xs font-semibold flex items-center gap-1.5 transition-all"
-                              title="Send bKash/Nagad reminder via WhatsApp"
-                            >
-                              <Send className="w-3.5 h-3.5" />
-                              Request MFS
-                            </button>
-                          )}
-                        </div>
-                      </div>
-
-                      {/* Calculations Detail Row */}
-                      <div className="grid grid-cols-2 sm:grid-cols-4 gap-3 pt-3.5 text-xs">
-                        <div className="bg-[#070A12] p-2.5 rounded-2xl border border-slate-800/80">
-                          <span className="text-[10px] text-slate-500 uppercase font-mono block mb-1">
-                            Total Meals
-                          </span>
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm font-bold text-sky-400 font-mono">
-                              {m.mealsCount} Meals
-                            </span>
-                            {userRole === 'manager' && (
-                              <div className="flex items-center gap-1">
-                                <button
-                                  onClick={() => handleMealCountChange(m.memberId, -1)}
-                                  className="w-5 h-5 rounded bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-300"
-                                >
-                                  -
-                                </button>
-                                <button
-                                  onClick={() => handleMealCountChange(m.memberId, 1)}
-                                  className="w-5 h-5 rounded bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-300"
-                                >
-                                  +
-                                </button>
+                          {/* Balance Badge & MFS Action */}
+                          <div className="flex items-center gap-3 self-end sm:self-center">
+                            <div className="text-right">
+                              <div className="text-[10px] text-slate-400 uppercase font-mono tracking-wider">
+                                {m.balance >= 0 ? 'Surplus (To Receive)' : 'Due (To Pay)'}
                               </div>
+                              <div className={`text-base sm:text-lg font-black font-mono tracking-tight ${
+                                m.balance >= 0 ? 'text-emerald-400' : 'text-rose-400'
+                              }`}>
+                                {m.balance >= 0 ? `+৳${m.balance.toLocaleString()}` : `-৳${Math.abs(m.balance).toLocaleString()}`}
+                              </div>
+                            </div>
+
+                            {/* Instant MFS Button if Member owes money */}
+                            {m.balance < 0 && (
+                              <button
+                                onClick={() =>
+                                  onOpenMFS({
+                                    amount: Math.abs(m.balance),
+                                    reason: `${messName} (${month}) Mess Due Bill`,
+                                    recipientName: m.name,
+                                    recipientPhone: m.phone,
+                                  })
+                                }
+                                className="px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/30 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm active:scale-95"
+                                title="Send bKash/Nagad reminder via WhatsApp"
+                              >
+                                <Send className="w-3.5 h-3.5" />
+                                Request MFS
+                              </button>
                             )}
                           </div>
                         </div>
 
-                        <div className="bg-[#070A12] p-2.5 rounded-2xl border border-slate-800/80">
-                          <span className="text-[10px] text-slate-500 uppercase font-mono block mb-1">
-                            Meal Cost
-                          </span>
-                          <span className="text-sm font-bold text-white font-mono">
-                            ৳{m.mealCost.toLocaleString()}
-                          </span>
-                        </div>
+                        {/* Calculations Detail Row */}
+                        <div className="grid grid-cols-2 sm:grid-cols-4 gap-2.5 pt-3.5 text-xs">
+                          <div className="bg-slate-950/60 p-2.5 sm:p-3 rounded-xl border border-slate-800/80">
+                            <span className="text-[10px] text-slate-500 uppercase font-mono block mb-1">
+                              Total Meals
+                            </span>
+                            <div className="flex items-center justify-between">
+                              <span className="text-xs sm:text-sm font-bold text-sky-400 font-mono">
+                                {m.mealsCount} Meals
+                              </span>
+                              {userRole === 'manager' && (
+                                <div className="flex items-center gap-1">
+                                  <button
+                                    onClick={() => handleMealCountChange(m.memberId, -1)}
+                                    className="w-6 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-300 font-bold transition-colors"
+                                    title="Decrease meal count"
+                                  >
+                                    -
+                                  </button>
+                                  <button
+                                    onClick={() => handleMealCountChange(m.memberId, 1)}
+                                    className="w-6 h-6 rounded-lg bg-slate-800 hover:bg-slate-700 flex items-center justify-center text-slate-300 font-bold transition-colors"
+                                    title="Increase meal count"
+                                  >
+                                    +
+                                  </button>
+                                </div>
+                              )}
+                            </div>
+                          </div>
 
-                        <div className="bg-[#070A12] p-2.5 rounded-2xl border border-slate-800/80">
-                          <span className="text-[10px] text-slate-500 uppercase font-mono block mb-1">
-                            Fixed Overhead
-                          </span>
-                          <span className="text-sm font-bold text-amber-400 font-mono">
-                            ৳{m.fixedCostShare.toLocaleString()}
-                          </span>
-                        </div>
+                          <div className="bg-slate-950/60 p-2.5 sm:p-3 rounded-xl border border-slate-800/80">
+                            <span className="text-[10px] text-slate-500 uppercase font-mono block mb-1">
+                              Meal Cost
+                            </span>
+                            <span className="text-xs sm:text-sm font-bold text-white font-mono">
+                              ৳{m.mealCost.toLocaleString()}
+                            </span>
+                          </div>
 
-                        <div className="bg-[#070A12] p-2.5 rounded-2xl border border-slate-800/80">
-                          <span className="text-[10px] text-slate-500 uppercase font-mono block mb-1">
-                            Total Deposit
-                          </span>
-                          <div className="flex items-center justify-between">
-                            <span className="text-sm font-bold text-purple-400 font-mono">
+                          <div className="bg-slate-950/60 p-2.5 sm:p-3 rounded-xl border border-slate-800/80">
+                            <span className="text-[10px] text-slate-500 uppercase font-mono block mb-1">
+                              Fixed Overhead
+                            </span>
+                            <span className="text-xs sm:text-sm font-bold text-amber-400 font-mono">
+                              ৳{m.fixedCostShare.toLocaleString()}
+                            </span>
+                          </div>
+
+                          <div className="bg-slate-950/60 p-2.5 sm:p-3 rounded-xl border border-slate-800/80">
+                            <span className="text-[10px] text-slate-500 uppercase font-mono block mb-1">
+                              Total Deposit
+                            </span>
+                            <span className="text-xs sm:text-sm font-bold text-purple-400 font-mono">
                               ৳{m.depositAmount.toLocaleString()}
                             </span>
                           </div>
                         </div>
-                      </div>
 
-                      {/* Manager Controls: Delete */}
-                      {userRole === 'manager' && (
-                        <div className="flex items-center justify-end gap-2 pt-2 text-[11px] text-slate-500">
-                          <button
-                            onClick={() => handleRemoveMember(m.memberId)}
-                            className="hover:text-rose-400 flex items-center gap-1 transition-colors"
-                          >
-                            <Trash2 className="w-3 h-3" /> Remove
-                          </button>
-                        </div>
-                      )}
-                    </div>
-                  );
-                })
-              )}
+                        {/* Manager Controls: Delete */}
+                        {userRole === 'manager' && (
+                          <div className="flex items-center justify-end gap-2 pt-2.5 text-[11px] text-slate-500">
+                            <button
+                              onClick={() => handleRemoveMember(m.memberId)}
+                              className="hover:text-rose-400 flex items-center gap-1 transition-colors"
+                            >
+                              <Trash2 className="w-3 h-3" /> Remove Member
+                            </button>
+                          </div>
+                        )}
+                      </div>
+                    );
+                  })
+                )}
               </div>
             </div>
           </div>
 
           {/* Mess Fund & Member Deposits Log */}
-          <div className="bg-[#0E131F] rounded-3xl p-6 border border-slate-800/80 shadow-xl space-y-4">
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800/60">
+          <div className="bg-slate-900/60 backdrop-blur-xl rounded-2xl p-5 sm:p-6 border border-slate-800/80 shadow-xl space-y-4">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4 pb-4 border-b border-slate-800/80">
               <div>
                 <h3 className="text-base sm:text-lg font-bold text-white flex items-center gap-2">
                   <Wallet className="w-5 h-5 text-purple-400" />
                   Mess Fund & Member Deposits Log
                 </h3>
-                <p className="text-xs text-slate-400">
-                  Total Deposits: ৳{calculations.totalDeposits.toLocaleString()} • Cash in Hand: ৳{calculations.cashInHand.toLocaleString()}
+                <p className="text-xs text-slate-400 mt-0.5">
+                  Total Deposits: <span className="font-mono text-purple-300 font-semibold">৳{calculations.totalDeposits.toLocaleString()}</span> • Cash in Hand: <span className={`font-mono font-semibold ${calculations.cashInHand >= 0 ? 'text-emerald-400' : 'text-rose-400'}`}>৳{calculations.cashInHand.toLocaleString()}</span>
                 </p>
               </div>
               {userRole === 'manager' && (
                 <button
                   onClick={() => setShowAddDeposit(true)}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-purple-500 hover:bg-purple-400 text-white font-semibold text-xs transition-all shadow-lg shadow-purple-500/20"
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-purple-500 hover:bg-purple-400 text-white font-semibold text-xs transition-all shadow-md shadow-purple-500/20 active:scale-95"
                 >
                   <Plus className="w-4 h-4" />
                   Record Deposit
@@ -1558,15 +1600,15 @@ export const MessModule: React.FC<MessModuleProps> = ({
               <table className="w-full text-left text-xs">
                 <thead>
                   <tr className="border-b border-slate-800 text-slate-400 font-mono uppercase text-[10px]">
-                    <th className="pb-3 pl-2">Date</th>
-                    <th className="pb-3">Member</th>
-                    <th className="pb-3">Method</th>
-                    <th className="pb-3">Note / TrxID</th>
-                    <th className="pb-3 text-right">Amount</th>
-                    {userRole === 'manager' && <th className="pb-3 text-right pr-2">Action</th>}
+                    <th className="pb-3 pl-2 font-medium">Date</th>
+                    <th className="pb-3 font-medium">Member</th>
+                    <th className="pb-3 font-medium">Method</th>
+                    <th className="pb-3 font-medium">Note / TrxID</th>
+                    <th className="pb-3 text-right font-medium">Amount</th>
+                    {userRole === 'manager' && <th className="pb-3 text-right pr-2 font-medium">Action</th>}
                   </tr>
                 </thead>
-                <tbody className="divide-y divide-slate-800/60">
+                <tbody className="divide-y divide-slate-800/50">
                   {deposits.length === 0 ? (
                     <tr>
                       <td colSpan={6} className="py-8 text-center text-slate-500">
@@ -1579,7 +1621,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                         <td className="py-3.5 pl-2 font-mono text-slate-400">{d.date}</td>
                         <td className="py-3.5 font-bold text-white">{d.memberName}</td>
                         <td className="py-3.5">
-                          <span className="px-2 py-0.5 rounded-full text-[10px] font-mono bg-purple-500/20 text-purple-300 border border-purple-500/30">
+                          <span className="px-2.5 py-0.5 rounded-md text-[10px] font-mono bg-purple-500/15 text-purple-300 border border-purple-500/30">
                             {d.paymentMethod}
                           </span>
                         </td>
@@ -1591,7 +1633,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                           <td className="py-3.5 text-right pr-2">
                             <button
                               onClick={() => handleDeleteDeposit(d)}
-                              className="text-slate-500 hover:text-rose-400 transition-colors"
+                              className="p-1 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
                               title="Delete deposit record"
                             >
                               <Trash2 className="w-3.5 h-3.5" />
@@ -1612,16 +1654,17 @@ export const MessModule: React.FC<MessModuleProps> = ({
       {activeTab === 'meals' && (
         <div className="space-y-6">
           {/* Date Selector & Cutoff Banner */}
-          <div className="bg-[#0E131F] rounded-3xl p-5 border border-slate-800/80 shadow-xl space-y-4">
+          <div className="bg-slate-900/60 backdrop-blur-xl rounded-2xl p-4 sm:p-5 border border-slate-800/80 shadow-xl space-y-4">
             <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-4">
-              <div className="flex items-center gap-2">
+              <div className="flex flex-wrap items-center gap-2">
                 <button
                   onClick={() => handleDateShift(-1)}
-                  className="w-9 h-9 rounded-2xl bg-[#070A12] hover:bg-slate-800 flex items-center justify-center text-slate-300 border border-slate-800 transition-colors"
+                  className="w-8 h-8 rounded-xl bg-slate-950 hover:bg-slate-800 flex items-center justify-center text-slate-300 border border-slate-800 transition-colors"
+                  title="Previous Day"
                 >
                   <ChevronLeft className="w-4 h-4" />
                 </button>
-                <div className="flex items-center gap-2 bg-[#070A12] px-4 py-2 rounded-2xl border border-slate-800 text-sm font-bold text-white font-mono">
+                <div className="flex items-center gap-2 bg-slate-950 px-3.5 py-1.5 rounded-xl border border-slate-800 text-xs sm:text-sm font-semibold text-white font-mono">
                   <Calendar className="w-4 h-4 text-sky-400" />
                   <input
                     type="date"
@@ -1632,26 +1675,27 @@ export const MessModule: React.FC<MessModuleProps> = ({
                 </div>
                 <button
                   onClick={() => handleDateShift(1)}
-                  className="w-9 h-9 rounded-2xl bg-[#070A12] hover:bg-slate-800 flex items-center justify-center text-slate-300 border border-slate-800 transition-colors"
+                  className="w-8 h-8 rounded-xl bg-slate-950 hover:bg-slate-800 flex items-center justify-center text-slate-300 border border-slate-800 transition-colors"
+                  title="Next Day"
                 >
                   <ChevronRight className="w-4 h-4" />
                 </button>
                 <button
                   onClick={() => setSelectedDate(todayStr)}
-                  className={`text-xs px-3 py-2 rounded-2xl font-bold transition-all ${
+                  className={`text-xs px-3 py-1.5 rounded-xl font-semibold transition-all ${
                     selectedDate === todayStr
-                      ? 'bg-sky-500 text-black shadow-md shadow-sky-500/25'
-                      : 'bg-slate-800 text-slate-300 hover:text-white'
+                      ? 'bg-slate-800 text-white border border-slate-700/80 shadow-sm'
+                      : 'bg-slate-950/80 text-slate-400 hover:text-white border border-slate-800/80'
                   }`}
                 >
                   Today
                 </button>
                 <button
                   onClick={() => setSelectedDate(tomorrowStr)}
-                  className={`text-xs px-3 py-2 rounded-2xl font-bold transition-all ${
+                  className={`text-xs px-3 py-1.5 rounded-xl font-semibold transition-all ${
                     selectedDate === tomorrowStr
-                      ? 'bg-amber-500 text-black shadow-md shadow-amber-500/25'
-                      : 'bg-slate-800 text-slate-300 hover:text-white'
+                      ? 'bg-slate-800 text-white border border-slate-700/80 shadow-sm'
+                      : 'bg-slate-950/80 text-slate-400 hover:text-white border border-slate-800/80'
                   }`}
                   title="Plan meals for tomorrow"
                 >
@@ -1664,31 +1708,31 @@ export const MessModule: React.FC<MessModuleProps> = ({
                 <div className="flex flex-wrap items-center gap-2 self-start sm:self-auto">
                   <button
                     onClick={handleTurnAllMealsOn}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-emerald-500/15 hover:bg-emerald-500/25 text-emerald-300 border border-emerald-500/30 text-xs font-bold transition-all shadow-sm"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-emerald-500/10 hover:bg-emerald-500/20 text-emerald-300 border border-emerald-500/25 text-xs font-semibold transition-all"
                     title="Turn all members' meals ON for this day"
                   >
                     <CheckCircle2 className="w-3.5 h-3.5 text-emerald-400" />
-                    All Meals ON
+                    All ON
                   </button>
                   <button
                     onClick={handleTurnAllMealsOff}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-rose-500/15 hover:bg-rose-500/25 text-rose-300 border border-rose-500/30 text-xs font-bold transition-all shadow-sm"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-rose-500/10 hover:bg-rose-500/20 text-rose-300 border border-rose-500/25 text-xs font-semibold transition-all"
                     title="Turn all members' meals OFF for this day"
                   >
                     <X className="w-3.5 h-3.5 text-rose-400" />
-                    All Meals OFF
+                    All OFF
                   </button>
                   <button
                     onClick={handleAutoFillDailyMeals}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-sky-500/10 hover:bg-sky-500/20 text-sky-400 border border-sky-500/30 text-xs font-semibold transition-all"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-sky-500/10 hover:bg-sky-500/20 text-sky-300 border border-sky-500/25 text-xs font-semibold transition-all"
                     title="Auto-fill default lunch & dinner for today"
                   >
-                    <Zap className="w-3.5 h-3.5" />
+                    <Zap className="w-3.5 h-3.5 text-sky-400" />
                     Auto-Fill
                   </button>
                   <button
                     onClick={handleSyncMealsFromDailyRecords}
-                    className="flex items-center gap-1.5 px-3 py-2 rounded-2xl bg-purple-500/15 hover:bg-purple-500/25 text-purple-300 border border-purple-500/30 text-xs font-semibold transition-all"
+                    className="flex items-center gap-1.5 px-3 py-1.5 rounded-xl bg-purple-500/10 hover:bg-purple-500/20 text-purple-300 border border-purple-500/25 text-xs font-semibold transition-all"
                     title="Recalculate monthly meal totals strictly from all daily meal records"
                   >
                     <RotateCcw className="w-3.5 h-3.5 text-purple-400" />
@@ -1699,7 +1743,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
             </div>
 
             {/* Cutoff Time Notification & 1-Click Reminder Actions */}
-            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-4 rounded-2xl bg-amber-500/10 border border-amber-500/20 text-xs text-amber-300">
+            <div className="flex flex-col sm:flex-row sm:items-center justify-between gap-3 p-3.5 rounded-xl bg-amber-500/5 border border-amber-500/15 text-xs text-amber-200/90">
               <div className="flex items-center gap-2.5">
                 <Clock className="w-4 h-4 flex-shrink-0 text-amber-400" />
                 <span>
@@ -1709,7 +1753,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
               <div className="flex items-center gap-2 flex-shrink-0">
                 <button
                   onClick={handleRequestPushNotification}
-                  className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-semibold flex items-center gap-1.5 transition-all"
+                  className="px-3 py-1.5 rounded-lg bg-slate-800 hover:bg-slate-700 text-slate-200 text-xs font-medium flex items-center gap-1.5 transition-all"
                   title="Enable Browser Notification"
                 >
                   <Bell className="w-3.5 h-3.5 text-rose-400" />
@@ -1721,7 +1765,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                   )}`}
                   target="_blank"
                   rel="noreferrer"
-                  className="px-3 py-1.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-all"
+                  className="px-3 py-1.5 rounded-lg bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center gap-1.5 transition-all"
                   title="Send Cutoff Notice to WhatsApp Group"
                 >
                   <MessageCircle className="w-3.5 h-3.5" />
@@ -1757,55 +1801,32 @@ export const MessModule: React.FC<MessModuleProps> = ({
               return (
                 <div
                   key={member.memberId}
-                  className={`bg-[#0E131F] rounded-3xl p-5 border transition-all ${
+                  className={`bg-slate-900/60 backdrop-blur-xl rounded-2xl p-4 sm:p-5 border transition-all ${
                     isOff
-                      ? 'border-rose-900/60 bg-gradient-to-b from-[#0E131F] to-rose-950/20 opacity-80'
+                      ? 'border-rose-900/40 bg-gradient-to-b from-slate-900/80 to-rose-950/20'
                       : 'border-slate-800/80 hover:border-slate-700/80'
                   }`}
                 >
-                  {/* Header */}
+                  {/* Header: Member Identity & Single Clean Status Toggle */}
                   <div className="flex items-center justify-between pb-3 border-b border-slate-800/60">
-                    <div>
-                      <div className="font-bold text-white text-base">{member.name}</div>
-                      <div className="text-[11px] text-slate-400 font-mono">
-                        {member.roomNo || 'Room 301'}
-                      </div>
-                    </div>
-                    {/* Header Meal Status Indicator */}
-                    <button
-                      onClick={() => {
-                        if (!canEdit) {
-                          triggerToast(`Switch 'Viewing as: ${member.name}' or switch to Manager Mode to change.`);
-                          return;
-                        }
-                        handleToggleMealOff(member.memberId);
-                      }}
-                      className={`text-xs px-2.5 py-1 rounded-xl font-bold border transition-all flex items-center gap-1.5 cursor-pointer shadow-sm ${
+                    <div className="flex items-center gap-2.5">
+                      <div className={`w-9 h-9 rounded-xl flex items-center justify-center font-bold text-xs ${
                         isOff
-                          ? 'bg-rose-500/20 text-rose-300 border-rose-500/40 hover:bg-rose-500/30'
-                          : 'bg-emerald-500/20 text-emerald-300 border-emerald-500/40 hover:bg-emerald-500/30'
-                      }`}
-                      title="Click to toggle Meal ON or OFF"
-                    >
-                      <span className={`w-2 h-2 rounded-full ${isOff ? 'bg-rose-400 animate-pulse' : 'bg-emerald-400'}`} />
-                      <span>{isOff ? 'Meal OFF' : 'Meal ON'}</span>
-                    </button>
-                  </div>
-
-                  {/* Prominent Meal ON / OFF Toggle Switch */}
-                  <div className="my-3 p-3 rounded-2xl bg-[#070A12] border border-slate-800/80 flex items-center justify-between gap-2 shadow-inner">
-                    <div className="flex items-center gap-2">
-                      <div className={`w-3 h-3 rounded-full flex items-center justify-center ${
-                        isOff ? 'bg-rose-500 shadow-md shadow-rose-500/50' : 'bg-emerald-400 shadow-md shadow-emerald-400/50'
+                          ? 'bg-rose-500/10 text-rose-400 border border-rose-500/20'
+                          : 'bg-emerald-500/10 text-emerald-400 border border-emerald-500/20'
                       }`}>
-                        <span className="w-1.5 h-1.5 rounded-full bg-black/60" />
+                        {member.name.charAt(0)}
                       </div>
-                      <span className="text-xs font-semibold text-slate-300">
-                        Meal: <strong className={isOff ? 'text-rose-400 uppercase tracking-wide' : 'text-emerald-400 uppercase tracking-wide'}>{isOff ? 'OFF' : 'ON'}</strong>
-                      </span>
+                      <div>
+                        <div className="font-bold text-white text-sm">{member.name}</div>
+                        <div className="text-[11px] text-slate-400 font-mono">
+                          {member.roomNo || 'Room 301'}
+                        </div>
+                      </div>
                     </div>
 
-                    <div className="flex items-center bg-slate-900 border border-slate-700/60 rounded-xl p-1 gap-1">
+                    {/* Single Sleek Segmented Switch: ON vs OFF */}
+                    <div className="flex items-center bg-slate-950 border border-slate-800 rounded-xl p-0.5 shadow-inner">
                       <button
                         type="button"
                         onClick={() => {
@@ -1815,9 +1836,9 @@ export const MessModule: React.FC<MessModuleProps> = ({
                           }
                           if (isOff) handleToggleMealOff(member.memberId);
                         }}
-                        className={`px-3 py-1 rounded-lg text-xs font-extrabold transition-all flex items-center gap-1 ${
+                        className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1 ${
                           !isOff
-                            ? 'bg-emerald-500 text-black shadow-lg shadow-emerald-500/40 scale-105'
+                            ? 'bg-emerald-500 text-slate-950 shadow-sm font-bold'
                             : 'text-slate-400 hover:text-slate-200'
                         }`}
                         title="Turn Meal ON for this day"
@@ -1835,9 +1856,9 @@ export const MessModule: React.FC<MessModuleProps> = ({
                           }
                           if (!isOff) handleToggleMealOff(member.memberId);
                         }}
-                        className={`px-3 py-1 rounded-lg text-xs font-extrabold transition-all flex items-center gap-1 ${
+                        className={`px-2.5 py-1 rounded-lg text-xs font-semibold transition-all flex items-center gap-1 ${
                           isOff
-                            ? 'bg-rose-500 text-white shadow-lg shadow-rose-500/40 scale-105'
+                            ? 'bg-rose-500 text-white shadow-sm font-bold'
                             : 'text-slate-400 hover:text-slate-200'
                         }`}
                         title="Turn Meal OFF for this day"
@@ -1848,8 +1869,8 @@ export const MessModule: React.FC<MessModuleProps> = ({
                     </div>
                   </div>
 
-                  {/* Meals Counters */}
-                  <div className="space-y-3 py-3">
+                  {/* Meals Stepper Counters */}
+                  <div className={`space-y-3 py-3 ${isOff ? 'opacity-40 pointer-events-none' : ''}`}>
                     {/* Breakfast */}
                     <div className="flex items-center justify-between text-xs">
                       <span className="text-slate-400 font-medium">Breakfast:</span>
@@ -1865,11 +1886,11 @@ export const MessModule: React.FC<MessModuleProps> = ({
                               isOff
                             )
                           }
-                          className="w-6 h-6 rounded-lg bg-[#070A12] border border-slate-800 flex items-center justify-center text-slate-300 hover:bg-slate-800 disabled:opacity-40"
+                          className="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 border border-slate-700/60 font-bold flex items-center justify-center transition-all disabled:opacity-30 disabled:pointer-events-none"
                         >
                           -
                         </button>
-                        <span className="w-8 text-center font-mono font-bold text-white">
+                        <span className="w-8 text-center font-mono font-bold text-white text-sm">
                           {b}
                         </span>
                         <button
@@ -1883,7 +1904,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                               isOff
                             )
                           }
-                          className="w-6 h-6 rounded-lg bg-[#070A12] border border-slate-800 flex items-center justify-center text-slate-300 hover:bg-slate-800 disabled:opacity-40"
+                          className="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 border border-slate-700/60 font-bold flex items-center justify-center transition-all disabled:opacity-30 disabled:pointer-events-none"
                         >
                           +
                         </button>
@@ -1905,11 +1926,11 @@ export const MessModule: React.FC<MessModuleProps> = ({
                               isOff
                             )
                           }
-                          className="w-6 h-6 rounded-lg bg-[#070A12] border border-slate-800 flex items-center justify-center text-slate-300 hover:bg-slate-800 disabled:opacity-40"
+                          className="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 border border-slate-700/60 font-bold flex items-center justify-center transition-all disabled:opacity-30 disabled:pointer-events-none"
                         >
                           -
                         </button>
-                        <span className="w-8 text-center font-mono font-bold text-white">
+                        <span className="w-8 text-center font-mono font-bold text-white text-sm">
                           {l}
                         </span>
                         <button
@@ -1923,7 +1944,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                               isOff
                             )
                           }
-                          className="w-6 h-6 rounded-lg bg-[#070A12] border border-slate-800 flex items-center justify-center text-slate-300 hover:bg-slate-800 disabled:opacity-40"
+                          className="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 border border-slate-700/60 font-bold flex items-center justify-center transition-all disabled:opacity-30 disabled:pointer-events-none"
                         >
                           +
                         </button>
@@ -1945,11 +1966,11 @@ export const MessModule: React.FC<MessModuleProps> = ({
                               isOff
                             )
                           }
-                          className="w-6 h-6 rounded-lg bg-[#070A12] border border-slate-800 flex items-center justify-center text-slate-300 hover:bg-slate-800 disabled:opacity-40"
+                          className="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 border border-slate-700/60 font-bold flex items-center justify-center transition-all disabled:opacity-30 disabled:pointer-events-none"
                         >
                           -
                         </button>
-                        <span className="w-8 text-center font-mono font-bold text-white">
+                        <span className="w-8 text-center font-mono font-bold text-white text-sm">
                           {d}
                         </span>
                         <button
@@ -1963,7 +1984,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                               isOff
                             )
                           }
-                          className="w-6 h-6 rounded-lg bg-[#070A12] border border-slate-800 flex items-center justify-center text-slate-300 hover:bg-slate-800 disabled:opacity-40"
+                          className="w-7 h-7 rounded-lg bg-slate-800 hover:bg-slate-700 active:scale-95 text-slate-200 border border-slate-700/60 font-bold flex items-center justify-center transition-all disabled:opacity-30 disabled:pointer-events-none"
                         >
                           +
                         </button>
@@ -1974,8 +1995,8 @@ export const MessModule: React.FC<MessModuleProps> = ({
                   {/* Day Total */}
                   <div className="pt-3 border-t border-slate-800/60 flex items-center justify-between text-xs font-semibold">
                     <span className="text-slate-400">Day Total:</span>
-                    <span className={`font-mono text-sm ${isOff ? 'text-rose-400 line-through' : 'text-sky-400 font-bold'}`}>
-                      {total} Meals
+                    <span className={`font-mono text-sm ${isOff ? 'text-rose-400 font-bold' : 'text-sky-400 font-bold'}`}>
+                      {isOff ? 'OFF (0 Meals)' : `${total} Meals`}
                     </span>
                   </div>
                 </div>
@@ -1990,7 +2011,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
       {activeTab === 'bazar' && (
         <div className="space-y-6">
           {/* Top Header Card */}
-          <div className="bg-[#0E131F] rounded-3xl p-5 sm:p-6 border border-slate-800/80 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
+          <div className="bg-slate-900/60 backdrop-blur-xl rounded-2xl p-5 sm:p-6 border border-slate-800/80 shadow-xl flex flex-col md:flex-row md:items-center justify-between gap-4">
             <div>
               <h3 className="text-lg sm:text-xl font-bold text-white flex items-center gap-2">
                 <ShoppingBag className="w-5 h-5 text-amber-400" />
@@ -2007,7 +2028,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                 )}`}
                 target="_blank"
                 rel="noreferrer"
-                className="px-3.5 py-2 rounded-2xl bg-amber-500/15 hover:bg-amber-500/25 text-amber-300 border border-amber-500/30 text-xs font-semibold flex items-center gap-1.5 transition-all"
+                className="px-3.5 py-2 rounded-xl bg-amber-500/10 hover:bg-amber-500/20 text-amber-300 border border-amber-500/30 text-xs font-semibold flex items-center gap-1.5 transition-all shadow-sm active:scale-95"
                 title="Send WhatsApp reminder to tomorrow's shopper"
               >
                 <MessageCircle className="w-3.5 h-3.5 text-amber-400" />
@@ -2017,7 +2038,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
               {userRole === 'manager' && (
                 <button
                   onClick={() => setShowAddBazar(true)}
-                  className="flex items-center gap-1.5 px-4 py-2 rounded-2xl bg-amber-500 hover:bg-amber-400 text-black font-bold text-xs transition-all shadow-lg shadow-amber-500/20"
+                  className="flex items-center gap-1.5 px-4 py-2 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 font-bold text-xs transition-all shadow-md shadow-amber-500/20 active:scale-95"
                 >
                   <Plus className="w-4 h-4" />
                   + Add Bazar Entry
@@ -2027,8 +2048,8 @@ export const MessModule: React.FC<MessModuleProps> = ({
           </div>
 
           {/* Section 1: Shared Shopping List (Wishlist) */}
-          <div className="bg-[#0E131F] rounded-3xl p-5 sm:p-6 border border-slate-800/80 shadow-xl space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800/60">
+          <div className="bg-slate-900/60 backdrop-blur-xl rounded-2xl p-5 sm:p-6 border border-slate-800/80 shadow-xl space-y-4">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800/80">
               <div className="flex items-center gap-2">
                 <ListChecks className="w-5 h-5 text-teal-400" />
                 <h4 className="text-sm sm:text-base font-bold text-white">
@@ -2050,18 +2071,18 @@ export const MessModule: React.FC<MessModuleProps> = ({
                 placeholder="What is needed? (e.g. Soybean Oil 5L, Miniket Rice 25kg, Salt)"
                 value={newWishItem}
                 onChange={(e) => setNewWishItem(e.target.value)}
-                className="flex-1 bg-[#070A12] border border-slate-800 rounded-2xl px-4 py-2.5 text-xs sm:text-sm text-white focus:border-teal-400 focus:outline-none"
+                className="flex-1 bg-slate-950/70 border border-slate-800/80 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white focus:border-teal-400 focus:outline-none transition-colors"
               />
               <input
                 type="text"
                 placeholder="Qty / Weight (e.g. 5L, 2kg)"
                 value={newWishQuantity}
                 onChange={(e) => setNewWishQuantity(e.target.value)}
-                className="w-full sm:w-40 bg-[#070A12] border border-slate-800 rounded-2xl px-4 py-2.5 text-xs sm:text-sm text-white focus:border-teal-400 focus:outline-none"
+                className="w-full sm:w-40 bg-slate-950/70 border border-slate-800/80 rounded-xl px-4 py-2.5 text-xs sm:text-sm text-white focus:border-teal-400 focus:outline-none transition-colors"
               />
               <button
                 type="submit"
-                className="px-5 py-2.5 rounded-2xl bg-teal-500 hover:bg-teal-400 text-black font-bold text-xs transition-all shadow-md shadow-teal-500/20 whitespace-nowrap"
+                className="px-5 py-2.5 rounded-xl bg-teal-500 hover:bg-teal-400 text-slate-950 font-bold text-xs transition-all shadow-md shadow-teal-500/20 whitespace-nowrap active:scale-95"
               >
                 + Add to List
               </button>
@@ -2077,10 +2098,10 @@ export const MessModule: React.FC<MessModuleProps> = ({
                 shoppingList.map((item) => (
                   <div
                     key={item.id}
-                    className={`rounded-2xl p-3.5 border flex items-center justify-between gap-3 transition-all ${
+                    className={`rounded-xl p-3.5 border flex items-center justify-between gap-3 transition-all ${
                       item.isBought
-                        ? 'border-slate-800/40 opacity-50 bg-[#070A12]'
-                        : 'border-slate-800/80 bg-[#070A12] hover:border-teal-500/40'
+                        ? 'border-slate-800/40 opacity-50 bg-slate-950/40'
+                        : 'border-slate-800/80 bg-slate-950/60 hover:border-teal-500/40'
                     }`}
                   >
                     <div className="flex items-center gap-3">
@@ -2088,7 +2109,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                         onClick={() => setShoppingList((prev) => toggleShoppingItemBoughtAction(prev, item.id))}
                         className={`w-6 h-6 rounded-lg flex items-center justify-center border transition-all ${
                           item.isBought
-                            ? 'bg-teal-500 border-teal-500 text-black'
+                            ? 'bg-teal-500 border-teal-500 text-slate-950 font-bold'
                             : 'border-slate-700 bg-slate-900 text-slate-400'
                         }`}
                         title={item.isBought ? 'Mark as not bought' : 'Mark as bought'}
@@ -2110,7 +2131,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                       {!item.isBought && userRole === 'manager' && (
                         <button
                           onClick={() => handleConvertWishToBazar(item)}
-                          className="text-[11px] px-2.5 py-1 rounded-xl bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 border border-teal-500/30 transition-all font-medium whitespace-nowrap"
+                          className="text-[11px] px-2.5 py-1 rounded-lg bg-teal-500/10 hover:bg-teal-500/20 text-teal-300 border border-teal-500/30 transition-all font-medium whitespace-nowrap"
                           title="Convert this item into a recorded Bazar Entry"
                         >
                           Convert to Bazar
@@ -2123,7 +2144,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                             triggerToast(`Removed "${item.item}" from shopping list.`);
                           }
                         }}
-                        className="text-slate-500 hover:text-rose-400 p-1 transition-colors"
+                        className="text-slate-500 hover:text-rose-400 p-1 rounded-lg hover:bg-rose-500/10 transition-colors"
                         title="Delete item"
                       >
                         <Trash2 className="w-3.5 h-3.5" />
@@ -2142,14 +2163,14 @@ export const MessModule: React.FC<MessModuleProps> = ({
                 <Receipt className="w-4 h-4 text-amber-400" />
                 Recorded Bazar Expenses & Memo Receipts
               </h4>
-              <span className="text-xs text-slate-400 font-mono">
+              <span className="text-xs text-slate-400 font-mono bg-slate-900/80 px-2.5 py-1 rounded-lg border border-slate-800">
                 {bazarExpenses.length} entries
               </span>
             </div>
 
             <div className="grid grid-cols-1 md:grid-cols-2 xl:grid-cols-3 gap-4">
               {bazarExpenses.length === 0 ? (
-                <div className="col-span-full bg-[#0E131F] rounded-3xl p-8 border border-dashed border-slate-800 text-center space-y-3">
+                <div className="col-span-full bg-slate-900/60 backdrop-blur-xl rounded-2xl p-8 border border-dashed border-slate-800 text-center space-y-3">
                   <ShoppingBag className="w-10 h-10 text-slate-600 mx-auto" />
                   <div className="text-sm font-semibold text-slate-300">No bazar expenses recorded yet</div>
                   <p className="text-xs text-slate-500 max-w-sm mx-auto">
@@ -2160,15 +2181,15 @@ export const MessModule: React.FC<MessModuleProps> = ({
                 bazarExpenses.map((b) => (
                   <div
                     key={b.id}
-                    className="bg-[#0E131F] rounded-3xl p-5 border border-slate-800/80 shadow-lg space-y-3"
+                    className="bg-slate-900/60 backdrop-blur-xl rounded-2xl p-4 sm:p-5 border border-slate-800/80 shadow-lg space-y-3 hover:border-slate-700/80 transition-all"
                   >
                     <div className="flex items-center justify-between pb-3 border-b border-slate-800/60">
                       <div>
                         <div className="text-xs font-mono text-amber-400 font-semibold">{b.date}</div>
-                        <div className="font-bold text-white text-base mt-0.5">{b.title}</div>
+                        <div className="font-bold text-white text-sm sm:text-base mt-0.5">{b.title}</div>
                       </div>
                       <div className="text-right">
-                        <div className="text-lg font-black text-emerald-400 font-mono">
+                        <div className="text-base sm:text-lg font-black text-emerald-400 font-mono">
                           ৳{b.amount.toLocaleString()}
                         </div>
                         <div className="text-[11px] text-slate-400 font-mono">
@@ -2178,12 +2199,12 @@ export const MessModule: React.FC<MessModuleProps> = ({
                     </div>
 
                     {b.items && (
-                      <div className="text-xs text-slate-300 bg-[#070A12] p-3 rounded-2xl border border-slate-800/60 font-sans leading-relaxed">
+                      <div className="text-xs text-slate-300 bg-slate-950/60 p-3 rounded-xl border border-slate-800/80 font-sans leading-relaxed">
                         {b.items}
                       </div>
                     )}
 
-                    <div className="flex items-center justify-between pt-2">
+                    <div className="flex items-center justify-between pt-1">
                       {b.receiptImage ? (
                         <button
                           onClick={() => setViewReceiptUrl(b.receiptImage || null)}
@@ -2199,7 +2220,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                       {userRole === 'manager' && (
                         <button
                           onClick={() => handleDeleteBazarExpense(b)}
-                          className="text-xs text-slate-500 hover:text-rose-400 transition-colors"
+                          className="p-1 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition-colors"
                           title="Delete Entry"
                         >
                           <Trash2 className="w-3.5 h-3.5" />
@@ -2216,8 +2237,8 @@ export const MessModule: React.FC<MessModuleProps> = ({
 
       {/* MODAL 1: ADD MEMBER */}
       {showAddMember && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
-          <div className="bg-[#0E131F] border border-slate-800 rounded-3xl p-6 w-full max-w-md shadow-2xl space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-4">
+          <div className="bg-slate-900/95 border border-slate-800/80 rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-4 backdrop-blur-xl">
             <h3 className="text-lg font-bold text-white flex items-center gap-2">
               <UserPlus className="w-5 h-5 text-emerald-400" />
               Add New Member
@@ -2231,7 +2252,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                   placeholder="e.g. Tanvir Hossain"
                   value={newMemberName}
                   onChange={(e) => setNewMemberName(e.target.value)}
-                  className="w-full bg-[#070A12] border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-emerald-500 focus:outline-none"
+                  className="w-full bg-slate-950/80 border border-slate-800/80 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-emerald-500 focus:outline-none transition-colors"
                 />
               </div>
 
@@ -2242,7 +2263,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                   placeholder="e.g. 017XXXXXXXX"
                   value={newMemberPhone}
                   onChange={(e) => setNewMemberPhone(e.target.value)}
-                  className="w-full bg-[#070A12] border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-emerald-500 focus:outline-none font-mono"
+                  className="w-full bg-slate-950/80 border border-slate-800/80 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-emerald-500 focus:outline-none font-mono transition-colors"
                 />
               </div>
 
@@ -2253,7 +2274,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                     type="text"
                     value={newMemberRoom}
                     onChange={(e) => setNewMemberRoom(e.target.value)}
-                    className="w-full bg-[#070A12] border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-emerald-500 focus:outline-none"
+                    className="w-full bg-slate-950/80 border border-slate-800/80 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-emerald-500 focus:outline-none transition-colors"
                   />
                 </div>
                 <div>
@@ -2261,7 +2282,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                   <select
                     value={newMemberRole}
                     onChange={(e) => setNewMemberRole(e.target.value as MessRole)}
-                    className="w-full bg-[#070A12] border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-emerald-500 focus:outline-none"
+                    className="w-full bg-slate-950/80 border border-slate-800/80 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-emerald-500 focus:outline-none transition-colors"
                   >
                     <option value="member">General Member</option>
                     <option value="manager">Manager</option>
@@ -2273,13 +2294,13 @@ export const MessModule: React.FC<MessModuleProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowAddMember(false)}
-                  className="px-4 py-2 rounded-xl text-slate-400 hover:text-white"
+                  className="px-4 py-2 rounded-xl text-slate-400 hover:text-white transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-emerald-500 text-black font-semibold hover:bg-emerald-400 shadow-md shadow-emerald-500/20"
+                  className="px-5 py-2 rounded-xl bg-emerald-500 text-slate-950 font-bold hover:bg-emerald-400 shadow-md shadow-emerald-500/20 active:scale-95 transition-all"
                 >
                   Add Member
                 </button>
@@ -2291,8 +2312,8 @@ export const MessModule: React.FC<MessModuleProps> = ({
 
       {/* MODAL 2: ADD BAZAR */}
       {showAddBazar && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
-          <div className="bg-[#0E131F] border border-slate-800 rounded-3xl p-6 w-full max-w-md shadow-2xl space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-4">
+          <div className="bg-slate-900/95 border border-slate-800/80 rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-4 backdrop-blur-xl">
             <h3 className="text-lg font-bold text-white flex items-center gap-2">
               <ShoppingBag className="w-5 h-5 text-amber-400" />
               Add Daily Bazar Expense
@@ -2303,7 +2324,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                 <select
                   value={bazarShopperId}
                   onChange={(e) => setBazarShopperId(e.target.value)}
-                  className="w-full bg-[#070A12] border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-amber-400 focus:outline-none"
+                  className="w-full bg-slate-950/80 border border-slate-800/80 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-amber-400 focus:outline-none transition-colors"
                 >
                   {memberMeals.map((m) => (
                     <option key={m.memberId} value={m.memberId}>
@@ -2321,7 +2342,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                   placeholder="e.g. 3500"
                   value={bazarAmount}
                   onChange={(e) => setBazarAmount(e.target.value)}
-                  className="w-full bg-[#070A12] border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white font-mono focus:border-amber-400 focus:outline-none"
+                  className="w-full bg-slate-950/80 border border-slate-800/80 rounded-xl px-3.5 py-2.5 text-sm text-white font-mono focus:border-amber-400 focus:outline-none transition-colors"
                 />
               </div>
 
@@ -2332,7 +2353,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                   placeholder="e.g. Kawran Bazar (Fish, Meat & Veggies)"
                   value={bazarTitle}
                   onChange={(e) => setBazarTitle(e.target.value)}
-                  className="w-full bg-[#070A12] border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-amber-400 focus:outline-none"
+                  className="w-full bg-slate-950/80 border border-slate-800/80 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-amber-400 focus:outline-none transition-colors"
                 />
               </div>
 
@@ -2343,7 +2364,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                   placeholder="e.g. Beef 2kg (৳1500), Rui Fish (৳800), Oil & Spices..."
                   value={bazarItems}
                   onChange={(e) => setBazarItems(e.target.value)}
-                  className="w-full bg-[#070A12] border border-slate-800 rounded-xl px-3.5 py-2 text-xs text-white focus:border-amber-400 focus:outline-none"
+                  className="w-full bg-slate-950/80 border border-slate-800/80 rounded-xl px-3.5 py-2 text-xs text-white focus:border-amber-400 focus:outline-none transition-colors"
                 />
               </div>
 
@@ -2361,13 +2382,13 @@ export const MessModule: React.FC<MessModuleProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowAddBazar(false)}
-                  className="px-4 py-2 rounded-xl text-slate-400 hover:text-white"
+                  className="px-4 py-2 rounded-xl text-slate-400 hover:text-white transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-amber-500 text-black font-semibold hover:bg-amber-400 shadow-md shadow-amber-500/20"
+                  className="px-5 py-2 rounded-xl bg-amber-500 text-slate-950 font-bold hover:bg-amber-400 shadow-md shadow-amber-500/20 active:scale-95 transition-all"
                 >
                   Save Expense
                 </button>
@@ -2379,8 +2400,8 @@ export const MessModule: React.FC<MessModuleProps> = ({
 
       {/* MODAL 3: ADD DEPOSIT */}
       {showAddDeposit && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/80 backdrop-blur-md p-4">
-          <div className="bg-[#0E131F] border border-slate-800 rounded-3xl p-6 w-full max-w-md shadow-2xl space-y-4">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-4">
+          <div className="bg-slate-900/95 border border-slate-800/80 rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-4 backdrop-blur-xl">
             <h3 className="text-lg font-bold text-white flex items-center gap-2">
               <Wallet className="w-5 h-5 text-purple-400" />
               Record Member Deposit
@@ -2391,7 +2412,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                 <select
                   value={depMemberId}
                   onChange={(e) => setDepMemberId(e.target.value)}
-                  className="w-full bg-[#070A12] border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-purple-400 focus:outline-none"
+                  className="w-full bg-slate-950/80 border border-slate-800/80 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-purple-400 focus:outline-none transition-colors"
                 >
                   {memberMeals.map((m) => (
                     <option key={m.memberId} value={m.memberId}>
@@ -2409,7 +2430,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                   placeholder="e.g. 5000"
                   value={depAmount}
                   onChange={(e) => setDepAmount(e.target.value)}
-                  className="w-full bg-[#070A12] border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white font-mono focus:border-purple-400 focus:outline-none"
+                  className="w-full bg-slate-950/80 border border-slate-800/80 rounded-xl px-3.5 py-2.5 text-sm text-white font-mono focus:border-purple-400 focus:outline-none transition-colors"
                 />
               </div>
 
@@ -2419,7 +2440,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                   <select
                     value={depMethod}
                     onChange={(e) => setDepMethod(e.target.value as any)}
-                    className="w-full bg-[#070A12] border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-purple-400 focus:outline-none"
+                    className="w-full bg-slate-950/80 border border-slate-800/80 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-purple-400 focus:outline-none transition-colors"
                   >
                     <option value="bKash">bKash</option>
                     <option value="Nagad">Nagad</option>
@@ -2435,7 +2456,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                     placeholder="e.g. 9JA732BK"
                     value={depNote}
                     onChange={(e) => setDepNote(e.target.value)}
-                    className="w-full bg-[#070A12] border border-slate-800 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-purple-400 focus:outline-none font-mono"
+                    className="w-full bg-slate-950/80 border border-slate-800/80 rounded-xl px-3.5 py-2.5 text-sm text-white focus:border-purple-400 focus:outline-none font-mono transition-colors"
                   />
                 </div>
               </div>
@@ -2444,13 +2465,13 @@ export const MessModule: React.FC<MessModuleProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowAddDeposit(false)}
-                  className="px-4 py-2 rounded-xl text-slate-400 hover:text-white"
+                  className="px-4 py-2 rounded-xl text-slate-400 hover:text-white transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="px-5 py-2 rounded-xl bg-purple-500 text-white font-semibold hover:bg-purple-400 shadow-md shadow-purple-500/20"
+                  className="px-5 py-2 rounded-xl bg-purple-500 text-white font-semibold hover:bg-purple-400 shadow-md shadow-purple-500/20 active:scale-95 transition-all"
                 >
                   Record Deposit
                 </button>
@@ -2462,9 +2483,9 @@ export const MessModule: React.FC<MessModuleProps> = ({
 
       {/* MODAL 4: INVITE CODE, DIRECT LINK & DATA BACKUP */}
       {showInviteModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
-          <div className="bg-[#0E131F] border border-slate-800 rounded-3xl p-6 w-full max-w-md shadow-2xl space-y-4 text-center">
-            <div className="w-12 h-12 rounded-2xl bg-sky-500/20 text-sky-400 mx-auto flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-4">
+          <div className="bg-slate-900/95 border border-slate-800/80 rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-4 text-center backdrop-blur-xl">
+            <div className="w-12 h-12 rounded-2xl bg-sky-500/15 text-sky-400 mx-auto flex items-center justify-center border border-sky-500/30">
               <Share2 className="w-6 h-6" />
             </div>
             <div>
@@ -2475,7 +2496,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
             </div>
 
             {/* Big Code Display */}
-            <div className="bg-[#070A12] border border-slate-800 rounded-2xl p-4 my-2">
+            <div className="bg-slate-950/80 border border-slate-800/80 rounded-xl p-4 my-2">
               <span className="text-[10px] text-slate-500 block uppercase font-mono mb-1">
                 Unique Mess Invite Code
               </span>
@@ -2485,7 +2506,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
             </div>
 
             {/* Direct Join Link Bar */}
-            <div className="bg-[#070A12] border border-slate-800 rounded-2xl p-3 text-left">
+            <div className="bg-slate-950/80 border border-slate-800/80 rounded-xl p-3 text-left">
               <span className="text-[10px] text-slate-500 block uppercase font-mono mb-1">
                 Direct Join Link
               </span>
@@ -2499,7 +2520,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                     setCopiedDirectLink(true);
                     setTimeout(() => setCopiedDirectLink(false), 2000);
                   }}
-                  className="px-2.5 py-1 rounded-xl bg-slate-800 hover:bg-slate-700 text-sky-300 text-[11px] font-semibold whitespace-nowrap flex items-center gap-1 transition-all"
+                  className="px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 text-sky-300 text-[11px] font-semibold whitespace-nowrap flex items-center gap-1 transition-all"
                 >
                   <Copy className="w-3 h-3" />
                   {copiedDirectLink ? 'Copied!' : 'Copy Link'}
@@ -2516,7 +2537,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                   setCopiedInvite(true);
                   setTimeout(() => setCopiedInvite(false), 2000);
                 }}
-                className="flex-1 py-2.5 rounded-2xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-all"
+                className="flex-1 py-2.5 rounded-xl bg-slate-800 hover:bg-slate-700 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-all"
               >
                 <Copy className="w-3.5 h-3.5" />
                 {copiedInvite ? 'Copied Message!' : 'Copy Text'}
@@ -2528,7 +2549,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                 )}`}
                 target="_blank"
                 rel="noreferrer"
-                className="flex-1 py-2.5 rounded-2xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-all"
+                className="flex-1 py-2.5 rounded-xl bg-emerald-600 hover:bg-emerald-500 text-white text-xs font-semibold flex items-center justify-center gap-1.5 transition-all shadow-md shadow-emerald-600/20"
               >
                 <MessageCircle className="w-3.5 h-3.5" />
                 WhatsApp
@@ -2536,7 +2557,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
             </div>
 
             {/* Offline Backup Export / Share */}
-            <div className="pt-2 border-t border-slate-800 flex items-center justify-between text-xs">
+            <div className="pt-2 border-t border-slate-800/80 flex items-center justify-between text-xs">
               <span className="text-slate-400 text-[11px]">Need offline sync?</span>
               <button
                 onClick={() => {
@@ -2561,7 +2582,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                   };
                   downloadMessBackupJson(currentMessState);
                 }}
-                className="text-emerald-400 hover:text-emerald-300 font-medium flex items-center gap-1 text-[11px]"
+                className="text-emerald-400 hover:text-emerald-300 font-medium flex items-center gap-1 text-[11px] transition-colors"
               >
                 <Download className="w-3 h-3" /> Export Backup (.json)
               </button>
@@ -2569,7 +2590,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
 
             <button
               onClick={() => setShowInviteModal(false)}
-              className="text-xs text-slate-400 hover:text-white pt-1 block mx-auto"
+              className="text-xs text-slate-400 hover:text-white pt-1 block mx-auto transition-colors"
             >
               Close
             </button>
@@ -2579,21 +2600,21 @@ export const MessModule: React.FC<MessModuleProps> = ({
 
       {/* MODAL 5: RECEIPT IMAGE VIEWER */}
       {viewReceiptUrl && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4">
-          <div className="bg-[#0E131F] border border-slate-800 rounded-3xl p-5 max-w-lg w-full space-y-3">
-            <div className="flex items-center justify-between pb-2 border-b border-slate-800">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
+          <div className="bg-slate-900/95 border border-slate-800/80 rounded-2xl p-5 max-w-lg w-full space-y-3 backdrop-blur-xl shadow-2xl">
+            <div className="flex items-center justify-between pb-2 border-b border-slate-800/80">
               <span className="text-sm font-bold text-white flex items-center gap-2">
                 <Receipt className="w-4 h-4 text-sky-400" />
                 Bazar Cash Memo / Receipt Voucher
               </span>
               <button
                 onClick={() => setViewReceiptUrl(null)}
-                className="text-slate-400 hover:text-white text-xs px-2 py-1 rounded-lg bg-slate-800"
+                className="text-slate-400 hover:text-white text-xs px-2.5 py-1 rounded-lg bg-slate-800 hover:bg-slate-700 transition-colors"
               >
                 ✕
               </button>
             </div>
-            <div className="rounded-2xl overflow-hidden max-h-[70vh] flex items-center justify-center bg-black">
+            <div className="rounded-xl overflow-hidden max-h-[70vh] flex items-center justify-center bg-black/80 border border-slate-800">
               <img
                 src={viewReceiptUrl}
                 alt="Receipt"
@@ -2606,7 +2627,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
 
       {/* MODAL 6: PRINTABLE SUMMARY SHEET */}
       {showPrintModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/90 backdrop-blur-md p-4 overflow-y-auto">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4 overflow-y-auto">
           <div className="bg-white text-slate-900 rounded-3xl p-6 sm:p-8 max-w-3xl w-full space-y-6 shadow-2xl my-8">
             <div className="flex items-center justify-between pb-4 border-b border-slate-300">
               <div>
@@ -2618,13 +2639,13 @@ export const MessModule: React.FC<MessModuleProps> = ({
               <div className="flex items-center gap-2">
                 <button
                   onClick={() => window.print()}
-                  className="px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 flex items-center gap-1.5"
+                  className="px-4 py-2 rounded-xl bg-slate-900 text-white text-xs font-semibold hover:bg-slate-800 flex items-center gap-1.5 transition-all"
                 >
                   <Printer className="w-4 h-4" /> Print Sheet
                 </button>
                 <button
                   onClick={() => setShowPrintModal(false)}
-                  className="px-3 py-2 rounded-xl bg-slate-200 text-slate-700 text-xs font-semibold hover:bg-slate-300"
+                  className="px-3 py-2 rounded-xl bg-slate-200 text-slate-700 text-xs font-semibold hover:bg-slate-300 transition-colors"
                 >
                   ✕
                 </button>
@@ -2694,15 +2715,15 @@ export const MessModule: React.FC<MessModuleProps> = ({
 
       {/* MODAL 7: MANAGER PIN SECURITY MODAL */}
       {showPinModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
-          <div className="bg-[#0E131F] border border-slate-800 rounded-3xl p-6 w-full max-w-sm shadow-2xl space-y-4 text-center">
-            <div className="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 mx-auto flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-4">
+          <div className="bg-slate-900/95 border border-slate-800/80 rounded-2xl p-6 w-full max-w-sm shadow-2xl space-y-4 text-center backdrop-blur-xl">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/15 text-amber-400 mx-auto flex items-center justify-center border border-amber-500/30">
               <Lock className="w-6 h-6" />
             </div>
             <div>
               <h3 className="text-lg font-bold text-white">Manager PIN Required</h3>
               <p className="text-xs text-slate-400 mt-1">
-                Enter your 4-digit manager PIN to unlock full management and editing controls.
+                Enter your 4-digit manager PIN to unlock full management controls.
               </p>
             </div>
 
@@ -2731,28 +2752,28 @@ export const MessModule: React.FC<MessModuleProps> = ({
                     setEnteredPin(e.target.value.replace(/\D/g, ''));
                     setPinError(null);
                   }}
-                  className="w-36 text-center text-2xl font-mono tracking-widest bg-[#070A12] border border-slate-800 rounded-2xl py-2 text-white focus:border-amber-400 focus:outline-none"
+                  className="w-36 text-center text-2xl font-mono tracking-widest bg-slate-950/80 border border-slate-800/80 rounded-xl py-2 text-white focus:border-amber-400 focus:outline-none transition-colors"
                 />
                 {pinError && (
                   <p className="text-xs text-rose-400 font-medium mt-2">{pinError}</p>
                 )}
               </div>
 
-              <div className="bg-[#070A12] p-2.5 rounded-xl border border-slate-800 text-[11px] text-slate-500 font-mono">
-                Default PIN: <strong className="text-amber-400">1234</strong> (can be changed anytime)
+              <div className="bg-slate-950/60 p-2.5 rounded-xl border border-slate-800/80 text-[11px] text-slate-400 font-mono">
+                Default PIN: <strong className="text-amber-400">1234</strong> (customizable anytime)
               </div>
 
               <div className="flex gap-2">
                 <button
                   type="button"
                   onClick={() => setShowPinModal(false)}
-                  className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
+                  className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold transition-all shadow-md shadow-amber-500/20"
+                  className="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold transition-all shadow-md shadow-amber-500/20 active:scale-95"
                 >
                   Unlock
                 </button>
@@ -2764,9 +2785,9 @@ export const MessModule: React.FC<MessModuleProps> = ({
 
       {/* MODAL 8: CHANGE MANAGER PIN */}
       {showChangePinModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
-          <div className="bg-[#0E131F] border border-slate-800 rounded-3xl p-6 w-full max-w-sm shadow-2xl space-y-4 text-center">
-            <div className="w-12 h-12 rounded-2xl bg-emerald-500/20 text-emerald-400 mx-auto flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-4">
+          <div className="bg-slate-900/95 border border-slate-800/80 rounded-2xl p-6 w-full max-w-sm shadow-2xl space-y-4 text-center backdrop-blur-xl">
+            <div className="w-12 h-12 rounded-2xl bg-emerald-500/15 text-emerald-400 mx-auto flex items-center justify-center border border-emerald-500/30">
               <Key className="w-6 h-6" />
             </div>
             <div>
@@ -2808,7 +2829,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                     setNewPinInput(e.target.value.replace(/\D/g, ''));
                     setChangePinError(null);
                   }}
-                  className="w-full text-center text-lg font-mono tracking-widest bg-[#070A12] border border-slate-800 rounded-xl py-2 text-white focus:border-emerald-500 focus:outline-none"
+                  className="w-full text-center text-lg font-mono tracking-widest bg-slate-950/80 border border-slate-800/80 rounded-xl py-2 text-white focus:border-emerald-500 focus:outline-none transition-colors"
                 />
               </div>
 
@@ -2824,7 +2845,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                     setConfirmNewPinInput(e.target.value.replace(/\D/g, ''));
                     setChangePinError(null);
                   }}
-                  className="w-full text-center text-lg font-mono tracking-widest bg-[#070A12] border border-slate-800 rounded-xl py-2 text-white focus:border-emerald-500 focus:outline-none"
+                  className="w-full text-center text-lg font-mono tracking-widest bg-slate-950/80 border border-slate-800/80 rounded-xl py-2 text-white focus:border-emerald-500 focus:outline-none transition-colors"
                 />
               </div>
 
@@ -2840,13 +2861,13 @@ export const MessModule: React.FC<MessModuleProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowChangePinModal(false)}
-                  className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
+                  className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold transition-all shadow-md shadow-emerald-500/20"
+                  className="flex-1 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold transition-all shadow-md shadow-emerald-500/20 active:scale-95"
                 >
                   Save PIN
                 </button>
@@ -2858,11 +2879,11 @@ export const MessModule: React.FC<MessModuleProps> = ({
 
       {/* MODAL 9: MESS SWITCHER & LIST */}
       {showMessSwitcherModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
-          <div className="bg-[#0E131F] border border-slate-800 rounded-3xl p-6 w-full max-w-lg shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-4">
+          <div className="bg-slate-900/95 border border-slate-800/80 rounded-2xl p-6 w-full max-w-lg shadow-2xl space-y-4 backdrop-blur-xl">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800/80">
               <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center border border-emerald-500/30">
                   <Building className="w-5 h-5" />
                 </div>
                 <div>
@@ -2874,7 +2895,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
               </div>
               <button
                 onClick={() => setShowMessSwitcherModal(false)}
-                className="text-slate-400 hover:text-white p-1 rounded-xl bg-slate-800/80"
+                className="text-slate-400 hover:text-white p-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 transition-colors"
               >
                 ✕
               </button>
@@ -2888,10 +2909,10 @@ export const MessModule: React.FC<MessModuleProps> = ({
                 return (
                   <div
                     key={m.id}
-                    className={`p-3.5 rounded-2xl border transition-all flex items-center justify-between gap-3 ${
+                    className={`p-3.5 rounded-xl border transition-all flex items-center justify-between gap-3 ${
                       isActive
                         ? 'bg-emerald-500/10 border-emerald-500/40 shadow-sm'
-                        : 'bg-[#070A12] border-slate-800 hover:border-slate-700'
+                        : 'bg-slate-950/70 border-slate-800/80 hover:border-slate-700'
                     }`}
                   >
                     <div className="flex-1 min-w-0">
@@ -2900,11 +2921,11 @@ export const MessModule: React.FC<MessModuleProps> = ({
                           {m.messName}
                         </span>
                         {isActive ? (
-                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-full bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
+                          <span className="text-[10px] font-semibold px-2 py-0.5 rounded-md bg-emerald-500/20 text-emerald-300 border border-emerald-500/30">
                             Active
                           </span>
                         ) : (
-                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-full bg-slate-800 text-amber-400 border border-amber-500/20 flex items-center gap-1">
+                          <span className="text-[10px] font-mono px-2 py-0.5 rounded-md bg-slate-800 text-amber-400 border border-amber-500/20 flex items-center gap-1">
                             <Lock className="w-2.5 h-2.5" />
                             Protected
                           </span>
@@ -2932,7 +2953,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                             setSwitchCodeError(null);
                             setShowSwitchVerifyModal(true);
                           }}
-                          className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-emerald-500/20 text-xs font-semibold text-emerald-400 hover:text-emerald-300 border border-slate-700 hover:border-emerald-500/40 transition-all flex items-center gap-1.5 shadow-sm"
+                          className="px-3 py-1.5 rounded-xl bg-slate-800 hover:bg-emerald-500/20 text-xs font-semibold text-emerald-400 hover:text-emerald-300 border border-slate-700 hover:border-emerald-500/40 transition-all flex items-center gap-1.5 shadow-sm active:scale-95"
                         >
                           <Lock className="w-3 h-3 text-amber-400" />
                           Unlock & Switch
@@ -2947,7 +2968,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                       {allMesses.length > 1 && (
                         <button
                           onClick={() => handleDeleteMess(m.id)}
-                          className="p-1.5 rounded-xl text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all"
+                          className="p-1.5 rounded-lg text-slate-500 hover:text-rose-400 hover:bg-rose-500/10 transition-all"
                           title="Delete this mess"
                         >
                           <Trash2 className="w-4 h-4" />
@@ -2960,13 +2981,13 @@ export const MessModule: React.FC<MessModuleProps> = ({
             </div>
 
             {/* Bottom Actions Bar */}
-            <div className="pt-3 border-t border-slate-800 flex flex-wrap gap-2">
+            <div className="pt-3 border-t border-slate-800/80 flex flex-wrap gap-2">
               <button
                 onClick={() => {
                   setShowMessSwitcherModal(false);
                   setShowCreateMessModal(true);
                 }}
-                className="flex-1 py-2.5 rounded-2xl bg-emerald-500 hover:bg-emerald-400 text-black text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-md shadow-emerald-500/20"
+                className="flex-1 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 text-xs font-bold flex items-center justify-center gap-1.5 transition-all shadow-md shadow-emerald-500/20 active:scale-95"
               >
                 <Plus className="w-4 h-4" /> Create New Mess
               </button>
@@ -2975,7 +2996,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                   setShowMessSwitcherModal(false);
                   setShowJoinMessModal(true);
                 }}
-                className="flex-1 py-2.5 rounded-2xl bg-[#070A12] hover:bg-slate-800 text-slate-200 border border-slate-700 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all"
+                className="flex-1 py-2.5 rounded-xl bg-slate-950/80 hover:bg-slate-800 text-slate-200 border border-slate-800 text-xs font-semibold flex items-center justify-center gap-1.5 transition-all active:scale-95"
               >
                 <LogIn className="w-4 h-4 text-sky-400" /> Join via Code
               </button>
@@ -2986,11 +3007,11 @@ export const MessModule: React.FC<MessModuleProps> = ({
 
       {/* MODAL 10: CREATE NEW MESS */}
       {showCreateMessModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
-          <div className="bg-[#0E131F] border border-slate-800 rounded-3xl p-6 w-full max-w-md shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-4">
+          <div className="bg-slate-900/95 border border-slate-800/80 rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-4 backdrop-blur-xl">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800/80">
               <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-2xl bg-emerald-500/20 text-emerald-400 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-emerald-500/15 text-emerald-400 flex items-center justify-center border border-emerald-500/30">
                   <FolderPlus className="w-5 h-5" />
                 </div>
                 <div>
@@ -3002,7 +3023,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
               </div>
               <button
                 onClick={() => setShowCreateMessModal(false)}
-                className="text-slate-400 hover:text-white p-1 rounded-xl bg-slate-800/80"
+                className="text-slate-400 hover:text-white p-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 transition-colors"
               >
                 ✕
               </button>
@@ -3017,7 +3038,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                   placeholder="e.g. Mirpur 10 Bachelor Flat"
                   value={createMessName}
                   onChange={(e) => setCreateMessName(e.target.value)}
-                  className="w-full bg-[#070A12] border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:border-emerald-500 focus:outline-none"
+                  className="w-full bg-slate-950/80 border border-slate-800/80 rounded-xl px-3.5 py-2.5 text-white focus:border-emerald-500 focus:outline-none transition-colors"
                 />
               </div>
 
@@ -3029,7 +3050,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                     placeholder="e.g. October 2026"
                     value={createMessMonth}
                     onChange={(e) => setCreateMessMonth(e.target.value)}
-                    className="w-full bg-[#070A12] border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:border-emerald-500 focus:outline-none"
+                    className="w-full bg-slate-950/80 border border-slate-800/80 rounded-xl px-3.5 py-2.5 text-white focus:border-emerald-500 focus:outline-none transition-colors"
                   />
                 </div>
                 <div>
@@ -3040,7 +3061,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                     placeholder="e.g. 24000"
                     value={createHouseRent}
                     onChange={(e) => setCreateHouseRent(e.target.value)}
-                    className="w-full bg-[#070A12] border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:border-emerald-500 focus:outline-none font-mono"
+                    className="w-full bg-slate-950/80 border border-slate-800/80 rounded-xl px-3.5 py-2.5 text-white focus:border-emerald-500 focus:outline-none font-mono transition-colors"
                   />
                 </div>
               </div>
@@ -3053,7 +3074,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                   placeholder="e.g. Siam Ahmed"
                   value={createManagerName}
                   onChange={(e) => setCreateManagerName(e.target.value)}
-                  className="w-full bg-[#070A12] border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:border-emerald-500 focus:outline-none"
+                  className="w-full bg-slate-950/80 border border-slate-800/80 rounded-xl px-3.5 py-2.5 text-white focus:border-emerald-500 focus:outline-none transition-colors"
                 />
               </div>
 
@@ -3065,7 +3086,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                     placeholder="017XXXXXXXX"
                     value={createManagerPhone}
                     onChange={(e) => setCreateManagerPhone(e.target.value)}
-                    className="w-full bg-[#070A12] border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:border-emerald-500 focus:outline-none font-mono"
+                    className="w-full bg-slate-950/80 border border-slate-800/80 rounded-xl px-3.5 py-2.5 text-white focus:border-emerald-500 focus:outline-none font-mono transition-colors"
                   />
                 </div>
                 <div>
@@ -3076,12 +3097,12 @@ export const MessModule: React.FC<MessModuleProps> = ({
                     placeholder="1234"
                     value={createManagerPin}
                     onChange={(e) => setCreateManagerPin(e.target.value.replace(/\D/g, ''))}
-                    className="w-full bg-[#070A12] border border-slate-800 rounded-xl px-3.5 py-2.5 text-white focus:border-emerald-500 focus:outline-none font-mono text-center tracking-widest"
+                    className="w-full bg-slate-950/80 border border-slate-800/80 rounded-xl px-3.5 py-2.5 text-white focus:border-emerald-500 focus:outline-none font-mono text-center tracking-widest transition-colors"
                   />
                 </div>
               </div>
 
-              <div className="bg-[#070A12] p-3 rounded-2xl border border-slate-800 text-[11px] text-slate-400 space-y-1">
+              <div className="bg-slate-950/60 p-3 rounded-xl border border-slate-800/80 text-[11px] text-slate-400 space-y-1">
                 <p>✨ A unique 6-character Invite Code will be generated automatically.</p>
                 <p>🔒 All meals, receipts, deposits, and accounts will be 100% isolated.</p>
               </div>
@@ -3090,13 +3111,13 @@ export const MessModule: React.FC<MessModuleProps> = ({
                 <button
                   type="button"
                   onClick={() => setShowCreateMessModal(false)}
-                  className="flex-1 py-2.5 rounded-xl text-slate-400 hover:text-white"
+                  className="flex-1 py-2.5 rounded-xl text-slate-400 hover:text-white transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-black font-bold transition-all shadow-md shadow-emerald-500/20"
+                  className="flex-1 py-2.5 rounded-xl bg-emerald-500 hover:bg-emerald-400 text-slate-950 font-bold transition-all shadow-md shadow-emerald-500/20 active:scale-95"
                 >
                   Create & Switch
                 </button>
@@ -3108,11 +3129,11 @@ export const MessModule: React.FC<MessModuleProps> = ({
 
       {/* MODAL 11: JOIN MESS VIA CODE / BACKUP */}
       {showJoinMessModal && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
-          <div className="bg-[#0E131F] border border-slate-800 rounded-3xl p-6 w-full max-w-md shadow-2xl space-y-4">
-            <div className="flex items-center justify-between pb-3 border-b border-slate-800">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-4">
+          <div className="bg-slate-900/95 border border-slate-800/80 rounded-2xl p-6 w-full max-w-md shadow-2xl space-y-4 backdrop-blur-xl">
+            <div className="flex items-center justify-between pb-3 border-b border-slate-800/80">
               <div className="flex items-center gap-2.5">
-                <div className="w-10 h-10 rounded-2xl bg-sky-500/20 text-sky-400 flex items-center justify-center">
+                <div className="w-10 h-10 rounded-xl bg-sky-500/15 text-sky-400 flex items-center justify-center border border-sky-500/30">
                   <LogIn className="w-5 h-5" />
                 </div>
                 <div>
@@ -3128,7 +3149,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                   setJoinError(null);
                   setImportError(null);
                 }}
-                className="text-slate-400 hover:text-white p-1 rounded-xl bg-slate-800/80"
+                className="text-slate-400 hover:text-white p-1 rounded-lg bg-slate-800/80 hover:bg-slate-700 transition-colors"
               >
                 ✕
               </button>
@@ -3146,11 +3167,11 @@ export const MessModule: React.FC<MessModuleProps> = ({
                     setJoinCodeInput(e.target.value.toUpperCase());
                     setJoinError(null);
                   }}
-                  className="flex-1 bg-[#070A12] border border-slate-800 rounded-xl px-3.5 py-2.5 text-white font-mono uppercase focus:border-sky-500 focus:outline-none"
+                  className="flex-1 bg-slate-950/80 border border-slate-800/80 rounded-xl px-3.5 py-2.5 text-white font-mono uppercase focus:border-sky-500 focus:outline-none transition-colors"
                 />
                 <button
                   type="submit"
-                  className="px-4 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-black font-bold transition-all shadow-md shadow-sky-500/20"
+                  className="px-4 py-2.5 rounded-xl bg-sky-500 hover:bg-sky-400 text-slate-950 font-bold transition-all shadow-md shadow-sky-500/20 active:scale-95"
                 >
                   Join
                 </button>
@@ -3163,9 +3184,9 @@ export const MessModule: React.FC<MessModuleProps> = ({
 
             <div className="relative py-2 text-center">
               <div className="absolute inset-0 flex items-center">
-                <div className="w-full border-t border-slate-800" />
+                <div className="w-full border-t border-slate-800/80" />
               </div>
-              <span className="relative bg-[#0E131F] px-3 text-[11px] text-slate-500 uppercase font-mono">
+              <span className="relative bg-slate-900 px-3 text-[11px] text-slate-500 uppercase font-mono">
                 OR IMPORT MESS BACKUP FILE
               </span>
             </div>
@@ -3176,7 +3197,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                 <label className="text-slate-300 font-medium block mb-1.5">
                   Upload Backup File (.json)
                 </label>
-                <label className="flex flex-col items-center justify-center p-4 rounded-2xl border-2 border-dashed border-slate-800 hover:border-slate-700 bg-[#070A12] cursor-pointer group transition-all">
+                <label className="flex flex-col items-center justify-center p-4 rounded-xl border-2 border-dashed border-slate-800/80 hover:border-slate-700 bg-slate-950/60 cursor-pointer group transition-all">
                   <Upload className="w-6 h-6 text-slate-500 group-hover:text-emerald-400 mb-1 transition-colors" />
                   <span className="text-[11px] text-slate-400 group-hover:text-slate-200">
                     Click to select a shared mess backup JSON file
@@ -3203,13 +3224,13 @@ export const MessModule: React.FC<MessModuleProps> = ({
                     setImportJsonInput(e.target.value);
                     setImportError(null);
                   }}
-                  className="w-full bg-[#070A12] border border-slate-800 rounded-xl p-2.5 text-[11px] font-mono text-white focus:border-emerald-500 focus:outline-none"
+                  className="w-full bg-slate-950/80 border border-slate-800/80 rounded-xl p-2.5 text-[11px] font-mono text-white focus:border-emerald-500 focus:outline-none transition-colors"
                 />
                 {importJsonInput.trim() && (
                   <button
                     type="button"
                     onClick={() => handleImportJson(importJsonInput)}
-                    className="mt-1.5 w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 text-xs font-semibold transition-all"
+                    className="mt-1.5 w-full py-2 rounded-xl bg-slate-800 hover:bg-slate-700 text-emerald-400 text-xs font-semibold transition-all active:scale-95"
                   >
                     Load Pasted Backup
                   </button>
@@ -3231,7 +3252,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
               <button
                 type="button"
                 onClick={() => setShowJoinMessModal(false)}
-                className="w-full py-2 text-xs text-slate-400 hover:text-white"
+                className="w-full py-2 text-xs text-slate-400 hover:text-white transition-colors"
               >
                 Close
               </button>
@@ -3242,9 +3263,9 @@ export const MessModule: React.FC<MessModuleProps> = ({
 
       {/* MODAL 12: SWITCH ACCESS VERIFICATION GATEKEEPER */}
       {showSwitchVerifyModal && switchTargetMess && (
-        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/85 backdrop-blur-md p-4">
-          <div className="bg-[#0E131F] border border-slate-800 rounded-3xl p-6 w-full max-w-sm shadow-2xl space-y-4 text-center">
-            <div className="w-12 h-12 rounded-2xl bg-amber-500/20 text-amber-400 mx-auto flex items-center justify-center">
+        <div className="fixed inset-0 z-50 flex items-center justify-center bg-black/75 backdrop-blur-md p-4">
+          <div className="bg-slate-900/95 border border-slate-800/80 rounded-2xl p-6 w-full max-w-sm shadow-2xl space-y-4 text-center backdrop-blur-xl">
+            <div className="w-12 h-12 rounded-2xl bg-amber-500/15 text-amber-400 mx-auto flex items-center justify-center border border-amber-500/30">
               <Lock className="w-6 h-6" />
             </div>
             <div>
@@ -3269,7 +3290,7 @@ export const MessModule: React.FC<MessModuleProps> = ({
                     setSwitchCodeInput(e.target.value);
                     setSwitchCodeError(null);
                   }}
-                  className="w-full text-center text-sm font-mono tracking-widest bg-[#070A12] border border-slate-800 rounded-xl py-2.5 text-white focus:border-amber-400 focus:outline-none"
+                  className="w-full text-center text-sm font-mono tracking-widest bg-slate-950/80 border border-slate-800/80 rounded-xl py-2.5 text-white focus:border-amber-400 focus:outline-none transition-colors"
                 />
               </div>
 
@@ -3288,13 +3309,13 @@ export const MessModule: React.FC<MessModuleProps> = ({
                     setSwitchCodeInput('');
                     setSwitchCodeError(null);
                   }}
-                  className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white"
+                  className="flex-1 py-2.5 rounded-xl text-xs font-semibold text-slate-400 hover:text-white transition-colors"
                 >
                   Cancel
                 </button>
                 <button
                   type="submit"
-                  className="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-black text-xs font-bold transition-all shadow-md shadow-amber-500/20"
+                  className="flex-1 py-2.5 rounded-xl bg-amber-500 hover:bg-amber-400 text-slate-950 text-xs font-bold transition-all shadow-md shadow-amber-500/20 active:scale-95"
                 >
                   Verify & Switch
                 </button>
